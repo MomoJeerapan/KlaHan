@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct GroupListView: View {
-    let groups = Array(repeating: ("Group", 300000), count: 6)
+    let groups = [
+        ("Family Trip", 150000),
+        ("Work Group", 220000),
+        ("Friends Party", 180000)
+    ]
 
     var body: some View {
         VStack(alignment: .leading) {
             Button(action: {
-                // Action สำหรับสร้างกลุ่ม
+                // Create group action
             }) {
                 Text("Create Group")
                     .foregroundColor(.blue)
@@ -22,23 +26,20 @@ struct GroupListView: View {
             }
 
             List(groups, id: \.0) { group in
-                HStack {
-                    Circle()
-                        .fill(Color.teal)
-                        .frame(width: 40, height: 40)
-                    Text(group.0)
-                        .font(.headline)
-                    Spacer()
-                    Text("\(group.1)")
-                        .foregroundColor(.gray)
+                NavigationLink(destination: GroupDetailView(groupName: group.0)) {
+                    HStack {
+                        Circle()
+                            .fill(Color.teal)
+                            .frame(width: 40, height: 40)
+                        Text(group.0)
+                            .font(.headline)
+                        Spacer()
+                        Text("฿\(group.1)")
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.vertical, 5)
                 }
-                .padding(.vertical, 5)
             }
         }
     }
-}
-
-
-#Preview {
-    GroupListView()
 }

@@ -11,16 +11,13 @@ struct FriendListView: View {
     let friends = [
         ("Nene", 300000),
         ("Tan", 300000),
-        ("Momo", 300000),
-        ("Nene", 300000),
-        ("Tan", 300000),
         ("Momo", 300000)
     ]
 
     var body: some View {
         VStack(alignment: .leading) {
             Button(action: {
-                // Action สำหรับเพิ่มเพื่อน
+                // Add friend action
             }) {
                 Text("Add friend")
                     .foregroundColor(.blue)
@@ -29,22 +26,20 @@ struct FriendListView: View {
             }
 
             List(friends, id: \.0) { friend in
-                HStack {
-                    Circle()
-                        .fill(Color.teal)
-                        .frame(width: 40, height: 40)
-                    Text(friend.0)
-                        .font(.headline)
-                    Spacer()
-                    Text("\(friend.1)")
-                        .foregroundColor(.gray)
+                NavigationLink(destination: FriendDetailView(name: friend.0)) {
+                    HStack {
+                        Circle()
+                            .fill(Color.teal)
+                            .frame(width: 40, height: 40)
+                        Text(friend.0)
+                            .font(.headline)
+                        Spacer()
+                        Text("฿\(friend.1)")
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.vertical, 5)
                 }
-                .padding(.vertical, 5)
             }
         }
     }
-}
-
-#Preview {
-    FriendListView()
 }
