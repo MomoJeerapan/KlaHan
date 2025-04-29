@@ -8,11 +8,71 @@
 import SwiftUI
 
 struct CommunityView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    enum Tab {
+        case friend, group
     }
-}
 
-#Preview {
-    CommunityView()
+    @State private var selectedTab: Tab = .friend
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Navigation Bar
+            HStack {
+                Image(systemName: "gear")
+                Spacer()
+                Text("Community")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                Spacer()
+                Image(systemName: "magnifyingglass")
+            }
+            .padding()
+            
+            // Tab Bar
+            HStack(spacing: 0) {
+                Button(action: {
+                    selectedTab = .friend
+                }) {
+                    Text("Friend")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(selectedTab == .friend ? Color.teal : Color.gray.opacity(0.2))
+                        .foregroundColor(.white)
+                }
+
+                Button(action: {
+                    selectedTab = .group
+                }) {
+                    Text("Group")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(selectedTab == .group ? Color.teal : Color.gray.opacity(0.2))
+                        .foregroundColor(.white)
+                }
+            }
+
+            // Content View
+            if selectedTab == .friend {
+                FriendListView()
+            } else {
+                GroupListView()
+            }
+
+            Spacer()
+
+            // Bottom Tab Bar Placeholder
+            HStack {
+                Image(systemName: "person")
+                Spacer()
+                Image(systemName: "chart.bar")
+                Spacer()
+                Image(systemName: "qrcode.viewfinder")
+                Spacer()
+                Image(systemName: "dollarsign.circle")
+                Spacer()
+                Image(systemName: "photo")
+            }
+            .padding()
+        }
+    }
 }

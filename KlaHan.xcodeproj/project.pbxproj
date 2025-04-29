@@ -11,6 +11,10 @@
 		3919A5E42DBFF0170024B201 /* TopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3919A5E32DBFF0170024B201 /* TopUpView.swift */; };
 		3919A5E62DBFF02A0024B201 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3919A5E52DBFF02A0024B201 /* ProfileView.swift */; };
 		3919A5E82DBFF0420024B201 /* CustomizeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3919A5E72DBFF0420024B201 /* CustomizeView.swift */; };
+		39D6F2962DC1511F008C84DE /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D6F2952DC1511F008C84DE /* CommunityView.swift */; };
+		39D6F2982DC1517F008C84DE /* FriendListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D6F2972DC1517F008C84DE /* FriendListView.swift */; };
+		39D6F29A2DC1519A008C84DE /* GroupListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D6F2992DC1519A008C84DE /* GroupListView.swift */; };
+		39D6F29E2DC151F8008C84DE /* TrendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D6F29D2DC151F8008C84DE /* TrendView.swift */; };
 		F70F6D112DBFEC1400C24C27 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D102DBFEC1400C24C27 /* LoginView.swift */; };
 		F70F6D132DBFEC2400C24C27 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D122DBFEC2400C24C27 /* RegisterView.swift */; };
 		F70F6D152DBFEC2F00C24C27 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D142DBFEC2F00C24C27 /* HomeView.swift */; };
@@ -25,6 +29,10 @@
 		3919A5E32DBFF0170024B201 /* TopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopUpView.swift; sourceTree = "<group>"; };
 		3919A5E52DBFF02A0024B201 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		3919A5E72DBFF0420024B201 /* CustomizeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizeView.swift; sourceTree = "<group>"; };
+		39D6F2952DC1511F008C84DE /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
+		39D6F2972DC1517F008C84DE /* FriendListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListView.swift; sourceTree = "<group>"; };
+		39D6F2992DC1519A008C84DE /* GroupListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupListView.swift; sourceTree = "<group>"; };
+		39D6F29D2DC151F8008C84DE /* TrendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendView.swift; sourceTree = "<group>"; };
 		F70F6D102DBFEC1400C24C27 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		F70F6D122DBFEC2400C24C27 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		F70F6D142DBFEC2F00C24C27 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -70,8 +78,12 @@
 				F70F6D102DBFEC1400C24C27 /* LoginView.swift */,
 				F70F6D122DBFEC2400C24C27 /* RegisterView.swift */,
 				F70F6D142DBFEC2F00C24C27 /* HomeView.swift */,
+				39D6F2952DC1511F008C84DE /* CommunityView.swift */,
+				39D6F2972DC1517F008C84DE /* FriendListView.swift */,
+				39D6F2992DC1519A008C84DE /* GroupListView.swift */,
 				3919A5E12DBFEFFD0024B201 /* ScanView.swift */,
 				3919A5E32DBFF0170024B201 /* TopUpView.swift */,
+				39D6F29D2DC151F8008C84DE /* TrendView.swift */,
 				3919A5E52DBFF02A0024B201 /* ProfileView.swift */,
 				3919A5E72DBFF0420024B201 /* CustomizeView.swift */,
 				F7DA0EB32DBCEC9D00DD8016 /* Assets.xcassets */,
@@ -158,6 +170,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39D6F29E2DC151F8008C84DE /* TrendView.swift in Sources */,
 				3919A5E62DBFF02A0024B201 /* ProfileView.swift in Sources */,
 				F70F6D112DBFEC1400C24C27 /* LoginView.swift in Sources */,
 				F70F6D132DBFEC2400C24C27 /* RegisterView.swift in Sources */,
@@ -166,6 +179,9 @@
 				F7DA0EB22DBCEC9B00DD8016 /* ContentView.swift in Sources */,
 				F70F6D152DBFEC2F00C24C27 /* HomeView.swift in Sources */,
 				F7DA0EB02DBCEC9B00DD8016 /* KlaHanApp.swift in Sources */,
+				39D6F2982DC1517F008C84DE /* FriendListView.swift in Sources */,
+				39D6F2962DC1511F008C84DE /* CommunityView.swift in Sources */,
+				39D6F29A2DC1519A008C84DE /* GroupListView.swift in Sources */,
 				3919A5E22DBFEFFD0024B201 /* ScanView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

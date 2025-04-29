@@ -8,8 +8,40 @@
 import SwiftUI
 
 struct FriendListView: View {
+    let friends = [
+        ("Nene", 300000),
+        ("Tan", 300000),
+        ("Momo", 300000),
+        ("Nene", 300000),
+        ("Tan", 300000),
+        ("Momo", 300000)
+    ]
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(alignment: .leading) {
+            Button(action: {
+                // Action สำหรับเพิ่มเพื่อน
+            }) {
+                Text("Add friend")
+                    .foregroundColor(.blue)
+                    .padding(.horizontal)
+                    .padding(.top, 10)
+            }
+
+            List(friends, id: \.0) { friend in
+                HStack {
+                    Circle()
+                        .fill(Color.teal)
+                        .frame(width: 40, height: 40)
+                    Text(friend.0)
+                        .font(.headline)
+                    Spacer()
+                    Text("\(friend.1)")
+                        .foregroundColor(.gray)
+                }
+                .padding(.vertical, 5)
+            }
+        }
     }
 }
 
