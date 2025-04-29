@@ -18,6 +18,8 @@
 		F70F6D112DBFEC1400C24C27 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D102DBFEC1400C24C27 /* LoginView.swift */; };
 		F70F6D132DBFEC2400C24C27 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D122DBFEC2400C24C27 /* RegisterView.swift */; };
 		F70F6D152DBFEC2F00C24C27 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D142DBFEC2F00C24C27 /* HomeView.swift */; };
+		F7B8AD3A2DC1698500AE2D9F /* FriendDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B8AD392DC1698500AE2D9F /* FriendDetailView.swift */; };
+		F7B8AD3C2DC1699800AE2D9F /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B8AD3B2DC1699800AE2D9F /* GroupDetailView.swift */; };
 		F7DA0EB02DBCEC9B00DD8016 /* KlaHanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DA0EAF2DBCEC9B00DD8016 /* KlaHanApp.swift */; };
 		F7DA0EB22DBCEC9B00DD8016 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DA0EB12DBCEC9B00DD8016 /* ContentView.swift */; };
 		F7DA0EB42DBCEC9D00DD8016 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7DA0EB32DBCEC9D00DD8016 /* Assets.xcassets */; };
@@ -36,6 +38,8 @@
 		F70F6D102DBFEC1400C24C27 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		F70F6D122DBFEC2400C24C27 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		F70F6D142DBFEC2F00C24C27 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		F7B8AD392DC1698500AE2D9F /* FriendDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendDetailView.swift; sourceTree = "<group>"; };
+		F7B8AD3B2DC1699800AE2D9F /* GroupDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		F7DA0EAC2DBCEC9B00DD8016 /* KlaHan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KlaHan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7DA0EAF2DBCEC9B00DD8016 /* KlaHanApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlaHanApp.swift; sourceTree = "<group>"; };
 		F7DA0EB12DBCEC9B00DD8016 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -78,8 +82,10 @@
 				F70F6D102DBFEC1400C24C27 /* LoginView.swift */,
 				F70F6D122DBFEC2400C24C27 /* RegisterView.swift */,
 				F70F6D142DBFEC2F00C24C27 /* HomeView.swift */,
+				F7B8AD392DC1698500AE2D9F /* FriendDetailView.swift */,
 				39D6F2952DC1511F008C84DE /* CommunityView.swift */,
 				39D6F2972DC1517F008C84DE /* FriendListView.swift */,
+				F7B8AD3B2DC1699800AE2D9F /* GroupDetailView.swift */,
 				39D6F2992DC1519A008C84DE /* GroupListView.swift */,
 				3919A5E12DBFEFFD0024B201 /* ScanView.swift */,
 				3919A5E32DBFF0170024B201 /* TopUpView.swift */,
@@ -172,6 +178,7 @@
 			files = (
 				39D6F29E2DC151F8008C84DE /* TrendView.swift in Sources */,
 				3919A5E62DBFF02A0024B201 /* ProfileView.swift in Sources */,
+				F7B8AD3C2DC1699800AE2D9F /* GroupDetailView.swift in Sources */,
 				F70F6D112DBFEC1400C24C27 /* LoginView.swift in Sources */,
 				F70F6D132DBFEC2400C24C27 /* RegisterView.swift in Sources */,
 				3919A5E42DBFF0170024B201 /* TopUpView.swift in Sources */,
@@ -183,6 +190,7 @@
 				39D6F2962DC1511F008C84DE /* CommunityView.swift in Sources */,
 				39D6F29A2DC1519A008C84DE /* GroupListView.swift in Sources */,
 				3919A5E22DBFEFFD0024B201 /* ScanView.swift in Sources */,
+				F7B8AD3A2DC1698500AE2D9F /* FriendDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

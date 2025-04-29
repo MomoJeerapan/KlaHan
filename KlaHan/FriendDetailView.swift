@@ -72,5 +72,3 @@ struct FriendDetailView: View {
     }
 }
 
-#Preview {
-}

@@ -82,7 +82,3 @@ struct GroupDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-
-
-#Preview {
-}
