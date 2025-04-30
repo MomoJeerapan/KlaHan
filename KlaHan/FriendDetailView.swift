@@ -72,3 +72,6 @@ struct FriendDetailView: View {
     }
 }
 
+#Preview {
+    FriendDetailView(name: "Nene")
+}

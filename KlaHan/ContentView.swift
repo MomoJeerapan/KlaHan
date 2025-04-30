@@ -11,12 +11,10 @@ struct ContentView: View {
     @State private var isLoggedIn = false
     
     var body: some View {
-        NavigationStack {
-            if isLoggedIn {
-                HomeView()
-            } else {
-                LoginView(isLoggedIn: .constant(false))
-            }
+        if isLoggedIn {
+            HomeView()
+        } else {
+            LoginView(isLoggedIn: $isLoggedIn)
         }
     }
 }

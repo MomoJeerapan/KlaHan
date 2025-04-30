@@ -82,3 +82,7 @@ struct GroupDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+
+#Preview {
+    GroupDetailView(groupName: "Family Trip")
+}

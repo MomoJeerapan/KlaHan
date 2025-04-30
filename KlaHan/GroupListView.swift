@@ -43,3 +43,7 @@ struct GroupListView: View {
         }
     }
 }
+
+#Preview {
+    GroupListView()
+}
