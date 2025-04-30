@@ -9,26 +9,26 @@ import SwiftUI
 
 struct RegisterView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var email = ""
+    @State private var Email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
-    @State private var name = ""
-    @State private var dateOfBirth = Date()
-    @State private var phoneNumber = ""
+    @State private var Username = ""
+    @State private var DateofBirth = Date()
+    @State private var PhoneNum = ""
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 45) {
             Text("Register")
                 .font(.largeTitle)
                 .bold()
                 .foregroundColor(Color(red: 0/255, green: 105/255, blue: 92/255))
             
-            TextField("Full Name", text: $name)
+            TextField("Username", text: $Username)
                            .padding()
                            .background(Color.gray.opacity(0.2))
                            .cornerRadius(8)
             
-            TextField("Email", text: $email)
+            TextField("Email", text: $Email)
                 .autocapitalization(.none)
                 .padding()
                 .background(Color.gray.opacity(0.2))
@@ -44,22 +44,34 @@ struct RegisterView: View {
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(8)
             
-            DatePicker("Date of Birth", selection: $dateOfBirth, displayedComponents: .date)
+            DatePicker("Date of Birth", selection: $DateofBirth, displayedComponents: .date)
                            .datePickerStyle(CompactDatePickerStyle())
                            .padding()
                            .background(Color.gray.opacity(0.2))
                            .cornerRadius(8)
                        
                        // Phone Number Field
-                       TextField("Phone Number", text: $phoneNumber)
+                       TextField("Phone Number", text: $PhoneNum)
                            .keyboardType(.phonePad)
                            .padding()
                            .background(Color.gray.opacity(0.2))
                            .cornerRadius(8)
             
             Button(action: {
-                // สมมติว่าสมัครสำเร็จ
-                dismiss()
+                AuthManager.shared.register(
+                    Email: Email,
+                    password: password,
+                    Username: Username,
+                    DateofBirth: DateofBirth,
+                    PhoneNum: PhoneNum
+                ) { result in
+                    switch result {
+                    case .success:
+                        dismiss() // ปิดหน้าลงทะเบียน
+                    case .failure(let error):
+                        print("Registration failed: \(error.localizedDescription)")
+                    }
+                }
             }) {
                 Text("Register")
                     .foregroundColor(.white)
