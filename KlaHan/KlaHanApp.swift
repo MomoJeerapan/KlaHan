@@ -25,7 +25,7 @@ struct KlaHanApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                LoginView(isLoggedIn: .constant(false))
+                ContentView()
             }
         }
     }

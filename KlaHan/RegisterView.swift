@@ -15,7 +15,10 @@ struct RegisterView: View {
     @State private var Username = ""
     @State private var DateofBirth = Date()
     @State private var PhoneNum = ""
-
+    
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    
     var body: some View {
         VStack(spacing: 45) {
             Text("Register")
@@ -24,9 +27,9 @@ struct RegisterView: View {
                 .foregroundColor(Color(red: 0/255, green: 105/255, blue: 92/255))
             
             TextField("Username", text: $Username)
-                           .padding()
-                           .background(Color.gray.opacity(0.2))
-                           .cornerRadius(8)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(8)
             
             TextField("Email", text: $Email)
                 .autocapitalization(.none)
@@ -45,19 +48,25 @@ struct RegisterView: View {
                 .cornerRadius(8)
             
             DatePicker("Date of Birth", selection: $DateofBirth, displayedComponents: .date)
-                           .datePickerStyle(CompactDatePickerStyle())
-                           .padding()
-                           .background(Color.gray.opacity(0.2))
-                           .cornerRadius(8)
-                       
-                       // Phone Number Field
-                       TextField("Phone Number", text: $PhoneNum)
-                           .keyboardType(.phonePad)
-                           .padding()
-                           .background(Color.gray.opacity(0.2))
-                           .cornerRadius(8)
+                .datePickerStyle(CompactDatePickerStyle())
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(8)
+            
+            // Phone Number Field
+            TextField("Phone Number", text: $PhoneNum)
+                .keyboardType(.phonePad)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(8)
             
             Button(action: {
+                guard password == confirmPassword else {
+                        alertMessage = "Passwords do not match."
+                        showAlert = true
+                        return
+                    }
+                
                 AuthManager.shared.register(
                     Email: Email,
                     password: password,
@@ -67,9 +76,11 @@ struct RegisterView: View {
                 ) { result in
                     switch result {
                     case .success:
-                        dismiss() // ปิดหน้าลงทะเบียน
+                        alertMessage = "Register successful!"
+                        showAlert = true
                     case .failure(let error):
-                        print("Registration failed: \(error.localizedDescription)")
+                        alertMessage = error.localizedDescription
+                        showAlert = true
                     }
                 }
             }) {
@@ -80,9 +91,21 @@ struct RegisterView: View {
                     .background(Color(red: 0/255, green: 105/255, blue: 92/255))
                     .cornerRadius(8)
             }
+            .alert(isPresented: $showAlert) {
+                Alert(
+                    title: Text("Registration"),
+                    message: Text(alertMessage),
+                    dismissButton: .default(Text("OK"), action: {
+                        if alertMessage == "Register successful!" {
+                            dismiss()
+                        }
+                    })
+                )
+            }
         }
         .padding()
         .background(Color(.systemGroupedBackground))
+        
     }
 }
 
