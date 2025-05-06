@@ -87,6 +87,7 @@ struct LoginView: View {
                         .background(Color(red: 0/255, green: 105/255, blue: 92/255))
                         .cornerRadius(8)
                 }
+                .padding(.horizontal, 24)
             }
             .padding()
             .alert(isPresented: $showAlert) {
@@ -104,7 +105,7 @@ struct LoginView: View {
                     .font(.footnote)
                     .foregroundColor(Color.blue)
             }
-            .padding(.top, -20)
+            .padding(.top, -10)
             
             HStack {
                 Text("Don't have an account?")

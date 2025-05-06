@@ -18,9 +18,16 @@
 		F70F6D112DBFEC1400C24C27 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D102DBFEC1400C24C27 /* LoginView.swift */; };
 		F70F6D132DBFEC2400C24C27 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D122DBFEC2400C24C27 /* RegisterView.swift */; };
 		F70F6D152DBFEC2F00C24C27 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70F6D142DBFEC2F00C24C27 /* HomeView.swift */; };
+		F731AA2D2DCAC28000DEB0E7 /* GroupInvitationInboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F731AA2C2DCAC28000DEB0E7 /* GroupInvitationInboxView.swift */; };
 		F76D15302DC22E5A001056E6 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F76D152F2DC22E5A001056E6 /* FirebaseDatabase */; };
 		F76D15342DC23CA4001056E6 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D15332DC23CA4001056E6 /* AuthManager.swift */; };
 		F76D15362DC24FF1001056E6 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F76D15352DC24FF1001056E6 /* FirebaseFirestore */; };
+		F76D15392DC2BC93001056E6 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D15382DC2BC93001056E6 /* AddFriendView.swift */; };
+		F76D850F2DC3EC0B0000F441 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = F76D850E2DC3EC0B0000F441 /* FirebaseStorage */; };
+		F76D85112DC3F0050000F441 /* CreateGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D85102DC3F0050000F441 /* CreateGroupView.swift */; };
+		F76D85152DC3F6DE0000F441 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D85142DC3F6DE0000F441 /* String+Extensions.swift */; };
+		F76D85192DC3F8FF0000F441 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D85182DC3F8FF0000F441 /* Group.swift */; };
+		F76D851B2DC3F9A50000F441 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D851A2DC3F9A50000F441 /* Model.swift */; };
 		F79139762DC17A3D00C4E6D9 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F79139752DC17A3D00C4E6D9 /* FirebaseAnalytics */; };
 		F79139822DC17A3D00C4E6D9 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = F79139812DC17A3D00C4E6D9 /* FirebaseAuth */; };
 		F7B8AD3A2DC1698500AE2D9F /* FriendDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B8AD392DC1698500AE2D9F /* FriendDetailView.swift */; };
@@ -44,8 +51,13 @@
 		F70F6D102DBFEC1400C24C27 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		F70F6D122DBFEC2400C24C27 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		F70F6D142DBFEC2F00C24C27 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		F731AA2C2DCAC28000DEB0E7 /* GroupInvitationInboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupInvitationInboxView.swift; sourceTree = "<group>"; };
 		F76D15332DC23CA4001056E6 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
-		F76D15372DC29D03001056E6 /* KlaHan.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KlaHan.entitlements; sourceTree = "<group>"; };
+		F76D15382DC2BC93001056E6 /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendView.swift; sourceTree = "<group>"; };
+		F76D85102DC3F0050000F441 /* CreateGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupView.swift; sourceTree = "<group>"; };
+		F76D85142DC3F6DE0000F441 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		F76D85182DC3F8FF0000F441 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		F76D851A2DC3F9A50000F441 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		F7B8AD392DC1698500AE2D9F /* FriendDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendDetailView.swift; sourceTree = "<group>"; };
 		F7B8AD3B2DC1699800AE2D9F /* GroupDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		F7B8AD4A2DC175BA00AE2D9F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -64,6 +76,7 @@
 				F79139762DC17A3D00C4E6D9 /* FirebaseAnalytics in Frameworks */,
 				F76D15362DC24FF1001056E6 /* FirebaseFirestore in Frameworks */,
 				F76D15302DC22E5A001056E6 /* FirebaseDatabase in Frameworks */,
+				F76D850F2DC3EC0B0000F441 /* FirebaseStorage in Frameworks */,
 				F79139822DC17A3D00C4E6D9 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -78,59 +91,79 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F7B8AD3D2DC170AB00AE2D9F /* Auth */ = {
+		F76D85132DC3F68E0000F441 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				F70F6D102DBFEC1400C24C27 /* LoginView.swift */,
-				F76D15332DC23CA4001056E6 /* AuthManager.swift */,
-				F70F6D122DBFEC2400C24C27 /* RegisterView.swift */,
+				F76D85142DC3F6DE0000F441 /* String+Extensions.swift */,
 			);
-			name = Auth;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
-		F7B8AD3E2DC170CF00AE2D9F /* Community */ = {
+		F76D85172DC3F8F10000F441 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F76D85182DC3F8FF0000F441 /* Group.swift */,
+				F76D851A2DC3F9A50000F441 /* Model.swift */,
+				F76D15332DC23CA4001056E6 /* AuthManager.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F78663152DC6ADFC009A12BF /* Community */ = {
 			isa = PBXGroup;
 			children = (
 				39D6F2952DC1511F008C84DE /* CommunityView.swift */,
+				F76D15382DC2BC93001056E6 /* AddFriendView.swift */,
 				F7B8AD392DC1698500AE2D9F /* FriendDetailView.swift */,
 				39D6F2972DC1517F008C84DE /* FriendListView.swift */,
+				F76D85102DC3F0050000F441 /* CreateGroupView.swift */,
 				F7B8AD3B2DC1699800AE2D9F /* GroupDetailView.swift */,
 				39D6F2992DC1519A008C84DE /* GroupListView.swift */,
+				F731AA2C2DCAC28000DEB0E7 /* GroupInvitationInboxView.swift */,
 			);
-			name = Community;
+			path = Community;
 			sourceTree = "<group>";
 		};
-		F7B8AD402DC1712E00AE2D9F /* Scan */ = {
+		F78663162DC6AE25009A12BF /* Auth */ = {
 			isa = PBXGroup;
 			children = (
-				3919A5E12DBFEFFD0024B201 /* ScanView.swift */,
+				F70F6D102DBFEC1400C24C27 /* LoginView.swift */,
+				F70F6D122DBFEC2400C24C27 /* RegisterView.swift */,
 			);
-			name = Scan;
+			path = Auth;
 			sourceTree = "<group>";
 		};
-		F7B8AD472DC171C000AE2D9F /* Profile */ = {
+		F78663172DC6AE3F009A12BF /* Profile */ = {
 			isa = PBXGroup;
 			children = (
 				3919A5E52DBFF02A0024B201 /* ProfileView.swift */,
 				3919A5E72DBFF0420024B201 /* CustomizeView.swift */,
 			);
-			name = Profile;
+			path = Profile;
 			sourceTree = "<group>";
 		};
-		F7B8AD482DC1727800AE2D9F /* Activity */ = {
+		F78663192DC6AE71009A12BF /* Activity */ = {
 			isa = PBXGroup;
 			children = (
 				39D6F29D2DC151F8008C84DE /* TrendView.swift */,
 			);
-			name = Activity;
+			path = Activity;
 			sourceTree = "<group>";
 		};
-		F7B8AD492DC172A300AE2D9F /* Payment */ = {
+		F786631A2DC6AE93009A12BF /* Payment */ = {
 			isa = PBXGroup;
 			children = (
 				3919A5E32DBFF0170024B201 /* TopUpView.swift */,
 			);
-			name = Payment;
+			path = Payment;
+			sourceTree = "<group>";
+		};
+		F786631B2DC6AEB2009A12BF /* Scan */ = {
+			isa = PBXGroup;
+			children = (
+				3919A5E12DBFEFFD0024B201 /* ScanView.swift */,
+			);
+			path = Scan;
 			sourceTree = "<group>";
 		};
 		F7DA0EA32DBCEC9B00DD8016 = {
@@ -153,13 +186,14 @@
 		F7DA0EAE2DBCEC9B00DD8016 /* KlaHan */ = {
 			isa = PBXGroup;
 			children = (
-				F76D15372DC29D03001056E6 /* KlaHan.entitlements */,
-				F7B8AD492DC172A300AE2D9F /* Payment */,
-				F7B8AD482DC1727800AE2D9F /* Activity */,
-				F7B8AD472DC171C000AE2D9F /* Profile */,
-				F7B8AD402DC1712E00AE2D9F /* Scan */,
-				F7B8AD3E2DC170CF00AE2D9F /* Community */,
-				F7B8AD3D2DC170AB00AE2D9F /* Auth */,
+				F786631B2DC6AEB2009A12BF /* Scan */,
+				F786631A2DC6AE93009A12BF /* Payment */,
+				F78663192DC6AE71009A12BF /* Activity */,
+				F78663172DC6AE3F009A12BF /* Profile */,
+				F78663162DC6AE25009A12BF /* Auth */,
+				F78663152DC6ADFC009A12BF /* Community */,
+				F76D85172DC3F8F10000F441 /* Model */,
+				F76D85132DC3F68E0000F441 /* Extensions */,
 				F7DA0EAF2DBCEC9B00DD8016 /* KlaHanApp.swift */,
 				F7DA0EB12DBCEC9B00DD8016 /* ContentView.swift */,
 				F70F6D142DBFEC2F00C24C27 /* HomeView.swift */,
@@ -199,6 +233,7 @@
 				F79139812DC17A3D00C4E6D9 /* FirebaseAuth */,
 				F76D152F2DC22E5A001056E6 /* FirebaseDatabase */,
 				F76D15352DC24FF1001056E6 /* FirebaseFirestore */,
+				F76D850E2DC3EC0B0000F441 /* FirebaseStorage */,
 			);
 			productName = KlaHan;
 			productReference = F7DA0EAC2DBCEC9B00DD8016 /* KlaHan.app */;
@@ -258,9 +293,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F76D851B2DC3F9A50000F441 /* Model.swift in Sources */,
 				39D6F29E2DC151F8008C84DE /* TrendView.swift in Sources */,
 				3919A5E62DBFF02A0024B201 /* ProfileView.swift in Sources */,
 				F7B8AD3C2DC1699800AE2D9F /* GroupDetailView.swift in Sources */,
+				F76D85192DC3F8FF0000F441 /* Group.swift in Sources */,
 				F70F6D112DBFEC1400C24C27 /* LoginView.swift in Sources */,
 				F70F6D132DBFEC2400C24C27 /* RegisterView.swift in Sources */,
 				3919A5E42DBFF0170024B201 /* TopUpView.swift in Sources */,
@@ -268,11 +305,15 @@
 				F76D15342DC23CA4001056E6 /* AuthManager.swift in Sources */,
 				F7DA0EB22DBCEC9B00DD8016 /* ContentView.swift in Sources */,
 				F70F6D152DBFEC2F00C24C27 /* HomeView.swift in Sources */,
+				F76D85112DC3F0050000F441 /* CreateGroupView.swift in Sources */,
 				F7DA0EB02DBCEC9B00DD8016 /* KlaHanApp.swift in Sources */,
 				39D6F2982DC1517F008C84DE /* FriendListView.swift in Sources */,
+				F76D85152DC3F6DE0000F441 /* String+Extensions.swift in Sources */,
 				39D6F2962DC1511F008C84DE /* CommunityView.swift in Sources */,
+				F76D15392DC2BC93001056E6 /* AddFriendView.swift in Sources */,
 				39D6F29A2DC1519A008C84DE /* GroupListView.swift in Sources */,
 				3919A5E22DBFEFFD0024B201 /* ScanView.swift in Sources */,
+				F731AA2D2DCAC28000DEB0E7 /* GroupInvitationInboxView.swift in Sources */,
 				F7B8AD3A2DC1698500AE2D9F /* FriendDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -405,11 +446,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = KlaHan/KlaHan.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"KlaHan/Preview Content\"";
+				DEVELOPMENT_TEAM = N4GP5HK5R4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KlaHan/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = KlaHan;
+				INFOPLIST_KEY_NSContactsUsageDescription = "ขออนุญาตเข้าถึงช่องทางการติดต่อ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -420,8 +466,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.monet.KlaHan;
+				PRODUCT_BUNDLE_IDENTIFIER = io.monet.KlaHan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -434,11 +481,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = KlaHan/KlaHan.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"KlaHan/Preview Content\"";
+				DEVELOPMENT_TEAM = N4GP5HK5R4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KlaHan/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = KlaHan;
+				INFOPLIST_KEY_NSContactsUsageDescription = "ขออนุญาตเข้าถึงช่องทางการติดต่อ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -449,8 +501,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.monet.KlaHan;
+				PRODUCT_BUNDLE_IDENTIFIER = io.monet.KlaHan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -501,6 +554,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F79139742DC17A3D00C4E6D9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		F76D850E2DC3EC0B0000F441 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F79139742DC17A3D00C4E6D9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		F79139752DC17A3D00C4E6D9 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
