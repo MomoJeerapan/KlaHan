@@ -15,6 +15,8 @@ struct GroupDetailView: View {
     @State private var groupName: String = "Loading..."
     @State private var members: [String] = []
     @State private var transactions: [(date: String, desc: String, amount: String)] = []
+    
+    @State private var selectedMember: String? 
 
     var body: some View {
         VStack(spacing: 12) {
@@ -62,9 +64,16 @@ struct GroupDetailView: View {
             Spacer()
 
             HStack(spacing: 12) {
-                ForEach(["ยืมเงิน", "คืนเงิน", "แปลงเงิน", "Export Excel"], id: \.self) { action in
-                    Button(action: {}) {
-                        Text(action)
+                if let selected = selectedMember {
+                    NavigationLink(
+                        destination: PromptpayView(
+                            payerName: "ฉัน",
+                            receiverName: selected,
+                            payerImage: Image(systemName: "person.circle.fill"),
+                            receiverImage: Image(systemName: "person.circle.fill")
+                        )
+                    ) {
+                        Text("คืนเงินให้ \(selected)")
                             .font(.subheadline)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 8)
@@ -72,6 +81,20 @@ struct GroupDetailView: View {
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
+                } else {
+                    Text("กรุณาเลือกสมาชิก")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+
+                NavigationLink(destination: ExchangeView()) {
+                    Text("แปลงเงิน")
+                        .font(.subheadline)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(Color.orange)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                 }
             }
             .padding(.bottom)

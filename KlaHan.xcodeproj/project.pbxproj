@@ -33,6 +33,14 @@
 		F7B8AD3A2DC1698500AE2D9F /* FriendDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B8AD392DC1698500AE2D9F /* FriendDetailView.swift */; };
 		F7B8AD3C2DC1699800AE2D9F /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B8AD3B2DC1699800AE2D9F /* GroupDetailView.swift */; };
 		F7B8AD4B2DC175BA00AE2D9F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7B8AD4A2DC175BA00AE2D9F /* GoogleService-Info.plist */; };
+		F7BB788D2DD1936F0057DC9A /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BB788C2DD1936F0057DC9A /* Camera.swift */; };
+		F7BB788F2DD193970057DC9A /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BB788E2DD193970057DC9A /* CameraPreview.swift */; };
+		F7BB78912DD193BC0057DC9A /* CameraUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BB78902DD193BC0057DC9A /* CameraUI.swift */; };
+		F7BB78932DD193D90057DC9A /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BB78922DD193D90057DC9A /* ImageView.swift */; };
+		F7BB78952DD194080057DC9A /* TextRecognition.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BB78942DD194080057DC9A /* TextRecognition.swift */; };
+		F7BB78972DD194310057DC9A /* TranscriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BB78962DD194310057DC9A /* TranscriptView.swift */; };
+		F7BB78992DD194720057DC9A /* PromptpayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BB78982DD194720057DC9A /* PromptpayView.swift */; };
+		F7BB789B2DD194AC0057DC9A /* ExchangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BB789A2DD194AC0057DC9A /* ExchangeView.swift */; };
 		F7DA0EB02DBCEC9B00DD8016 /* KlaHanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DA0EAF2DBCEC9B00DD8016 /* KlaHanApp.swift */; };
 		F7DA0EB22DBCEC9B00DD8016 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DA0EB12DBCEC9B00DD8016 /* ContentView.swift */; };
 		F7DA0EB42DBCEC9D00DD8016 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7DA0EB32DBCEC9D00DD8016 /* Assets.xcassets */; };
@@ -61,6 +69,14 @@
 		F7B8AD392DC1698500AE2D9F /* FriendDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendDetailView.swift; sourceTree = "<group>"; };
 		F7B8AD3B2DC1699800AE2D9F /* GroupDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		F7B8AD4A2DC175BA00AE2D9F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F7BB788C2DD1936F0057DC9A /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		F7BB788E2DD193970057DC9A /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
+		F7BB78902DD193BC0057DC9A /* CameraUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraUI.swift; sourceTree = "<group>"; };
+		F7BB78922DD193D90057DC9A /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
+		F7BB78942DD194080057DC9A /* TextRecognition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRecognition.swift; sourceTree = "<group>"; };
+		F7BB78962DD194310057DC9A /* TranscriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptView.swift; sourceTree = "<group>"; };
+		F7BB78982DD194720057DC9A /* PromptpayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptpayView.swift; sourceTree = "<group>"; };
+		F7BB789A2DD194AC0057DC9A /* ExchangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeView.swift; sourceTree = "<group>"; };
 		F7DA0EAC2DBCEC9B00DD8016 /* KlaHan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KlaHan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7DA0EAF2DBCEC9B00DD8016 /* KlaHanApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlaHanApp.swift; sourceTree = "<group>"; };
 		F7DA0EB12DBCEC9B00DD8016 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -154,6 +170,8 @@
 			isa = PBXGroup;
 			children = (
 				3919A5E32DBFF0170024B201 /* TopUpView.swift */,
+				F7BB78982DD194720057DC9A /* PromptpayView.swift */,
+				F7BB789A2DD194AC0057DC9A /* ExchangeView.swift */,
 			);
 			path = Payment;
 			sourceTree = "<group>";
@@ -162,6 +180,12 @@
 			isa = PBXGroup;
 			children = (
 				3919A5E12DBFEFFD0024B201 /* ScanView.swift */,
+				F7BB788C2DD1936F0057DC9A /* Camera.swift */,
+				F7BB788E2DD193970057DC9A /* CameraPreview.swift */,
+				F7BB78902DD193BC0057DC9A /* CameraUI.swift */,
+				F7BB78922DD193D90057DC9A /* ImageView.swift */,
+				F7BB78942DD194080057DC9A /* TextRecognition.swift */,
+				F7BB78962DD194310057DC9A /* TranscriptView.swift */,
 			);
 			path = Scan;
 			sourceTree = "<group>";
@@ -296,21 +320,29 @@
 				F76D851B2DC3F9A50000F441 /* Model.swift in Sources */,
 				39D6F29E2DC151F8008C84DE /* TrendView.swift in Sources */,
 				3919A5E62DBFF02A0024B201 /* ProfileView.swift in Sources */,
+				F7BB78912DD193BC0057DC9A /* CameraUI.swift in Sources */,
+				F7BB78932DD193D90057DC9A /* ImageView.swift in Sources */,
+				F7BB78992DD194720057DC9A /* PromptpayView.swift in Sources */,
 				F7B8AD3C2DC1699800AE2D9F /* GroupDetailView.swift in Sources */,
 				F76D85192DC3F8FF0000F441 /* Group.swift in Sources */,
+				F7BB78952DD194080057DC9A /* TextRecognition.swift in Sources */,
 				F70F6D112DBFEC1400C24C27 /* LoginView.swift in Sources */,
 				F70F6D132DBFEC2400C24C27 /* RegisterView.swift in Sources */,
 				3919A5E42DBFF0170024B201 /* TopUpView.swift in Sources */,
 				3919A5E82DBFF0420024B201 /* CustomizeView.swift in Sources */,
+				F7BB789B2DD194AC0057DC9A /* ExchangeView.swift in Sources */,
+				F7BB788F2DD193970057DC9A /* CameraPreview.swift in Sources */,
 				F76D15342DC23CA4001056E6 /* AuthManager.swift in Sources */,
 				F7DA0EB22DBCEC9B00DD8016 /* ContentView.swift in Sources */,
 				F70F6D152DBFEC2F00C24C27 /* HomeView.swift in Sources */,
+				F7BB78972DD194310057DC9A /* TranscriptView.swift in Sources */,
 				F76D85112DC3F0050000F441 /* CreateGroupView.swift in Sources */,
 				F7DA0EB02DBCEC9B00DD8016 /* KlaHanApp.swift in Sources */,
 				39D6F2982DC1517F008C84DE /* FriendListView.swift in Sources */,
 				F76D85152DC3F6DE0000F441 /* String+Extensions.swift in Sources */,
 				39D6F2962DC1511F008C84DE /* CommunityView.swift in Sources */,
 				F76D15392DC2BC93001056E6 /* AddFriendView.swift in Sources */,
+				F7BB788D2DD1936F0057DC9A /* Camera.swift in Sources */,
 				39D6F29A2DC1519A008C84DE /* GroupListView.swift in Sources */,
 				3919A5E22DBFEFFD0024B201 /* ScanView.swift in Sources */,
 				F731AA2D2DCAC28000DEB0E7 /* GroupInvitationInboxView.swift in Sources */,

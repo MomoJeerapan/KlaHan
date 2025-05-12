@@ -48,18 +48,32 @@ struct FriendDetailView: View {
             Spacer()
 
             HStack(spacing: 12) {
-                ForEach(["ยืมเงิน", "คืนเงิน", "แปลงเงิน", "Export Excel"], id: \.self) { action in
-                    Button(action: {}) {
-                        Text(action)
-                            .font(.subheadline)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(Color.teal.opacity(0.8))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                NavigationLink(destination:
+                    PromptpayView(
+                        payerName: "ฉัน",
+                        payerImage: Image(systemName: "person.circle.fill"),
+                        receiverImage: Image(systemName: "person.circle.fill")
+                    )
+                ) {
+                    Text("คืนเงิน")
+                        .font(.subheadline)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(Color.teal.opacity(0.8))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+
+                NavigationLink(destination: ExchangeView()) {
+                    Text("แปลงเงิน")
+                        .font(.subheadline)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(Color.teal.opacity(0.8))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                     }
                 }
-            }
             .padding(.bottom)
         }
         .padding(.top)

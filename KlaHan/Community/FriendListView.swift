@@ -43,6 +43,12 @@ struct FriendListView: View {
             .onAppear {
                 fetchFriends()
             }
+            .sheet(isPresented: $isNavigatingToAddFriend) {
+                NavigationStack {
+                    AddFriendView()
+                }
+            }
+
         }
     }
     func fetchFriends() {
