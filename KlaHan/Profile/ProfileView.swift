@@ -23,7 +23,7 @@ struct ProfileView: View {
                 Button(action: {
                     print("Avatar tapped")
                 }) {
-                    Image("Lion") // เปลี่ยนเป็นชื่อรูปของคุณเอง
+                    Image("Lion") // ใช้ชื่อรูปของคุณ
                         .resizable()
                         .frame(width: 290, height: 290)
                         .clipShape(RoundedRectangle(cornerRadius: 20))
@@ -46,22 +46,23 @@ struct ProfileView: View {
                 Spacer()
             }
             .navigationBarItems(
-                leading: Button(action: {
-                    print("Settings tapped")
-                }) {
-                    Image(systemName: "gearshape")
-                        .foregroundColor(.black)
-                },
-                trailing: Circle()
-                    .fill(Color("DarkGreen"))
-                    .frame(width: 40, height: 40)
-                    .overlay(
-                        Image(systemName: "person.fill")
-                            .foregroundColor(.white)
-                    )
+                leading:
+                    NavigationLink(destination: TopUpView()) {
+                        Text("Top Up")
+                            .font(.headline)
+                            .foregroundColor(Color(red: 0/255, green: 105/255, blue: 92/255))
+                    },
+                trailing:
+                    NavigationLink(destination: InformationView()) {
+                        Image("Lion") // ใช้โลโก้โปรไฟล์ของคุณ
+                            .resizable()
+                            .frame(width: 36, height: 36)
+                            .clipShape(Circle())
+                            .shadow(radius: 2)
+                    }
             )
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.white, for: .navigationBar) // ให้พื้นหลังขาว
+            .toolbarBackground(Color.white, for: .navigationBar)
         }
     }
 }

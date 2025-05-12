@@ -32,16 +32,20 @@ struct TranscriptView: View {
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
                         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.4)))
-
-                    Button(action: {
-                        UIPasteboard.general.string = transcriptText
-                    }) {
-                        Label("คัดลอกทั้งหมด", systemImage: "doc.on.doc")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                    VStack {
+                        Button(action: {
+                            UIPasteboard.general.string = transcriptText
+                        }) {
+                            Label("คัดลอกทั้งหมด", systemImage: "doc.on.doc")
+                        }
+                        NavigationLink("เลือกรายการอาหาร") {
+                            TranscriptSelectionView(transcriptText: transcriptText)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                     }
                 }
             }

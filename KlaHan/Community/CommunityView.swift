@@ -19,13 +19,9 @@ struct CommunityView: View {
             VStack(spacing: 0) {
                 // Custom Top Bar
                 HStack {
-                    Image(systemName: "gear")
-                    Spacer()
                     Text("Community")
                         .font(.title2)
                         .fontWeight(.bold)
-                    Spacer()
-                    Image(systemName: "magnifyingglass")
                 }
                 .padding()
 

@@ -10,7 +10,7 @@ import Firebase
 
 struct FriendDetailView: View {
     let friendID: String
-    @State private var friendName: String = "Loading..."
+    @State private var friendName: String = "ไม่มีประวิติการยืมเงิน"
     @State private var transactions: [(date: String, desc: String, amount: String)] = []
 
     var body: some View {
@@ -22,6 +22,7 @@ struct FriendDetailView: View {
 
             Text(friendName)
                 .font(.title.bold())
+                .foregroundColor(.gray)
 
 
             TabView {
@@ -51,8 +52,10 @@ struct FriendDetailView: View {
                 NavigationLink(destination:
                     PromptpayView(
                         payerName: "ฉัน",
+                        receiverName: "แก",
                         payerImage: Image(systemName: "person.circle.fill"),
-                        receiverImage: Image(systemName: "person.circle.fill")
+                        receiverImage: Image(systemName: "person.circle.fill"),
+                        context: .friend(friendUID: friendID)
                     )
                 ) {
                     Text("คืนเงิน")

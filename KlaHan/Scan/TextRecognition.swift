@@ -28,6 +28,12 @@ class OCR {
             observations.append(observation)
         }
     }
+    
+    var transcriptText: String {
+            observations
+                .map { $0.topCandidates(1).first?.string ?? "" }
+                .joined(separator: "\n")
+        }
 }
 
 /// Create and dynamically size a bounding box.

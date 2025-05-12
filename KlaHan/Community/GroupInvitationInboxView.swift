@@ -10,20 +10,25 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct GroupInvitationInboxView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) var dismiss
     @State private var invitations: [GroupInvitation] = []
-    
+
     var body: some View {
         List(invitations) { invite in
             VStack(alignment: .leading) {
                 Text("Group: \(invite.groupName)")
-                Text("From: \(invite.from)").font(.caption).foregroundColor(.gray)
+                    .font(.headline)
+
+                Text("From: \(invite.Header)")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+
                 HStack {
                     Button("Accept") {
                         respondToGroupInvitation(invite, accept: true)
                     }
                     .buttonStyle(.borderedProminent)
-                    
+
                     Button("Reject") {
                         respondToGroupInvitation(invite, accept: false)
                     }
@@ -46,26 +51,47 @@ struct GroupInvitationInboxView: View {
     
     func fetchGroupInvitations() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        
-        Firestore.firestore().collection("GroupInvitations")
+
+        let db = Firestore.firestore()
+        db.collection("GroupInvitations")
             .whereField("to", isEqualTo: uid)
             .whereField("status", isEqualTo: "pending")
             .getDocuments { snapshot, error in
                 guard let docs = snapshot?.documents else { return }
-                invitations = docs.map { doc in
+
+                var fetchedInvitations: [GroupInvitation] = []
+                let dispatchGroup = DispatchGroup()
+
+                for doc in docs {
                     let data = doc.data()
-                    return GroupInvitation(
-                        id: doc.documentID,
-                        groupId: data["groupId"] as? String ?? "",
-                        groupName: data["groupName"] as? String ?? "",
-                        from: data["from"] as? String ?? "",
-                        to: data["to"] as? String ?? "",
-                        status: data["status"] as? String ?? "pending"
-                    )
+                    let fromUID = data["from"] as? String ?? ""
+                    let docId = doc.documentID
+
+                    dispatchGroup.enter()
+                    db.collection("Users").document(fromUID).getDocument { userSnapshot, _ in
+                        let creatorName = userSnapshot?.data()?["Username"] as? String ?? "Unknown"
+
+                        let invitation = GroupInvitation(
+                            id: docId,
+                            groupId: data["groupId"] as? String ?? "",
+                            groupName: data["groupName"] as? String ?? "",
+                            from: fromUID,
+                            to: data["to"] as? String ?? "",
+                            status: data["status"] as? String ?? "pending",
+                            Header: creatorName // ✅ ใช้ชื่อผู้สร้างกลุ่ม
+                        )
+
+                        fetchedInvitations.append(invitation)
+                        dispatchGroup.leave()
+                    }
+                }
+
+                dispatchGroup.notify(queue: .main) {
+                    self.invitations = fetchedInvitations
                 }
             }
     }
-    
+
     func respondToGroupInvitation(_ invite: GroupInvitation, accept: Bool) {
         let db = Firestore.firestore()
         let inviteRef = db.collection("GroupInvitations").document(invite.id)

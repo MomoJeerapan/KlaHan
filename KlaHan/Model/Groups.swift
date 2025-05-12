@@ -7,17 +7,18 @@
 
 import Foundation
 
-struct Group : Identifiable  {
+struct Groups : Identifiable  {
     var id: String // documentID
     var subject: String
-    var members: [String]
+    var members: [String] = []
+    var balance: Double? = nil
     var documentId: String?
-    var balance: Double?
     
     func toDict() -> [String: Any] {
         return [
             "subject": subject,
-            "members": members
+            "members": members,
+            "balance": balance ?? 0.0
         ]
     }
 }

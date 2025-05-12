@@ -10,13 +10,14 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct GroupListView: View {
-    @State private var groups: [Group] = []
-    @State private var invitations: [GroupInvitation] = []
-    @State private var isPresented: Bool = false
-    @State private var isInboxPresented: Bool = false
+    @State private var groups: [Groups] = []
+    @State private var myGroupDebts: [String: Double] = [:]
+    @State private var isPresented = false
+    @State private var isInboxPresented = false
 
     var body: some View {
         VStack(alignment: .leading) {
+            // Header
             HStack {
                 Button(action: {
                     isInboxPresented = true
@@ -40,7 +41,10 @@ struct GroupListView: View {
             }
             .padding([.horizontal, .top])
 
-            List(groups, id: \.subject) { group in
+            // List of groups
+            List(groups, id: \.id) { group in
+                let amountOwed = myGroupDebts[group.id] ?? 0.0
+
                 NavigationLink(destination: GroupDetailView(groupId: group.id)) {
                     HStack {
                         Circle()
@@ -49,8 +53,8 @@ struct GroupListView: View {
                         Text(group.subject)
                             .font(.headline)
                         Spacer()
-                        Text("฿\(group.balance ?? 0, specifier: "%.2f")")
-                            .foregroundColor(.gray)
+                        Text("฿\(amountOwed, specifier: "%.2f")")
+                            .foregroundColor(amountOwed == 0 ? .green : .red)
                     }
                     .padding(.vertical, 5)
                 }
@@ -62,8 +66,7 @@ struct GroupListView: View {
         .navigationTitle("Groups")
         .sheet(isPresented: $isPresented) {
             NavigationStack {
-                CreateGroupView()
-                    .environmentObject(Model())
+                CreateGroupView().environmentObject(Model())
             }
         }
         .sheet(isPresented: $isInboxPresented) {
@@ -73,34 +76,69 @@ struct GroupListView: View {
         }
     }
 
+    // MARK: - Fetch Groups
     func fetchUserGroups() {
-        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
 
         Firestore.firestore().collection("Groups")
-            .whereField("members", arrayContains: currentUID)
+            .whereField("members", arrayContains: uid)
             .getDocuments { snapshot, error in
                 guard let docs = snapshot?.documents else { return }
-                self.groups = docs.map { doc in
+
+                let fetchedGroups = docs.map { doc -> Groups in
                     let data = doc.data()
-                    return Group(
+                    return Groups(
                         id: doc.documentID,
                         subject: data["subject"] as? String ?? "Untitled",
                         members: data["members"] as? [String] ?? [],
-                        balance: data["balance"] as? Double
+                        balance: nil
                     )
+                }
+
+                self.groups = fetchedGroups
+
+                for group in fetchedGroups {
+                    fetchMyDebtInGroup(groupId: group.id)
+                }
+            }
+    }
+
+    // MARK: - Fetch debt per group
+    func fetchMyDebtInGroup(groupId: String) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+
+        Firestore.firestore().collection("Groups").document(groupId)
+            .collection("Balances")
+            .whereField("consumer", isEqualTo: uid)
+            .getDocuments { snapshot, error in
+                guard let docs = snapshot?.documents else { return }
+
+                let total = docs.reduce(0.0) { result, doc in
+                    let amount = doc.data()["amount"] as? Double ?? 0.0
+                    return result + amount
+                }
+
+                DispatchQueue.main.async {
+                    myGroupDebts[groupId] = total
                 }
             }
     }
 }
 
-struct GroupInvitation: Identifiable {
-    let id: String
-    let groupId: String
-    let groupName: String
-    let from: String
-    let to: String
-    let status: String
-}
+// MARK: - Model
+
+
+    // MARK: - Model
+    struct GroupInvitation: Identifiable {
+        let id: String
+        let groupId: String
+        let groupName: String
+        let from: String
+        let to: String
+        let status: String
+        let Header: String
+    }
+
 #Preview {
     GroupListView()
 }

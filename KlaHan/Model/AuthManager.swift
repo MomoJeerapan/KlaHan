@@ -54,6 +54,7 @@ final class AuthManager {
             }
         }
     }
+    
     func login(Email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
         Auth.auth().signIn(withEmail: Email, password: password) { _, error in
             if let error = error {

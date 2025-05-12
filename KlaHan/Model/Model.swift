@@ -16,9 +16,9 @@ import FirebaseFirestore
 class Model: ObservableObject {
     
     
-    @Published var groups: [Group] = []
+    @Published var groups: [Groups] = []
     
-    func saveGroup(group: Group, completion: @escaping (Error?) -> Void) {
+    func saveGroup(group: Groups, completion: @escaping (Error?) -> Void) {
         let db = Firestore.firestore()
         var docRef: DocumentReference? = nil
         docRef = db.collection("Groups")
@@ -67,4 +67,27 @@ class Model: ObservableObject {
 
     
 }
+
+struct ParsedItem: Identifiable {
+    let id = UUID()
+    var description: String
+    var amount: String
+    var date: Date
+    var payer: String? = nil
+    var isSelected: Bool = false
+    var consumers: [String] = []
+    var amountPerConsumer: Double?
+}
+
+struct SummaryKey: Hashable {
+    let consumer: String
+    let payer: String
+}
+
+struct SummaryEntry: Hashable {
+    let consumer: String
+    let payer: String
+    let amount: Double
+}
+
 
