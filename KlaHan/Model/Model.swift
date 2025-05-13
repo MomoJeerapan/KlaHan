@@ -68,25 +68,36 @@ class Model: ObservableObject {
     
 }
 
+struct UserIdentity: Identifiable, Hashable, Codable {
+    var uid: String
+    var name: String
+
+    var id: String { uid } // ใช้ uid เป็น id หลัก
+}
+
+
 struct ParsedItem: Identifiable {
     let id = UUID()
     var description: String
     var amount: String
     var date: Date
-    var payer: String? = nil
+    var payer: UserIdentity? = nil
     var isSelected: Bool = false
-    var consumers: [String] = []
+    var consumers: [UserIdentity] = []
     var amountPerConsumer: Double?
 }
 
+
+
+
 struct SummaryKey: Hashable {
-    let consumer: String
-    let payer: String
+    let consumer: UserIdentity
+    let payer: UserIdentity
 }
 
 struct SummaryEntry: Hashable {
-    let consumer: String
-    let payer: String
+    let consumer: UserIdentity
+    let payer: UserIdentity
     let amount: Double
 }
 

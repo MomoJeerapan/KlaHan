@@ -16,7 +16,7 @@ struct PromptpayView: View {
     var payerImage: Image
     var receiverImage: Image
     var context: PromptpayContext
-
+    
     @State private var amount: String = ""
     @State private var currentStep: Step = .inputAmount
     @State private var qrImage: UIImage?
@@ -24,18 +24,18 @@ struct PromptpayView: View {
     @State private var isFullScreenImagePresented: Bool = false
     @State private var selectedImage: UIImage?
     @State private var showConfirmationAlert = false
-
+    
     enum Step {
         case inputAmount, uploadQR, uploadSlip, previewAndConfirm
     }
-
+    
     enum PromptpayContext {
-        case group(groupId: String)
+        case group(groupId: String, receiverUID: String)
         case friend(friendUID: String)
     }
-
+    
     @Environment(\.presentationMode) var presentationMode
-
+    
     var body: some View {
         VStack {
             switch currentStep {
@@ -58,7 +58,7 @@ struct PromptpayView: View {
             )
         }
     }
-
+    
     private var inputAmountView: some View {
         VStack(spacing: 20) {
             personRow
@@ -79,7 +79,7 @@ struct PromptpayView: View {
             Spacer()
         }
     }
-
+    
     private var uploadQRView: some View {
         VStack(spacing: 20) {
             Text("แนบรูป QR Code").font(.headline)
@@ -91,7 +91,7 @@ struct PromptpayView: View {
             Spacer()
         }.padding()
     }
-
+    
     private var uploadSlipView: some View {
         VStack(spacing: 20) {
             Text("แนบสลิปการโอน").font(.headline)
@@ -103,7 +103,7 @@ struct PromptpayView: View {
             Spacer()
         }.padding()
     }
-
+    
     private var previewAndConfirmView: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -130,7 +130,7 @@ struct PromptpayView: View {
             .padding()
         }
     }
-
+    
     private var fullScreenImageView: some View {
         Group {
             if isFullScreenImagePresented, let selectedImage = selectedImage {
@@ -155,7 +155,7 @@ struct PromptpayView: View {
             }
         }
     }
-
+    
     private var personRow: some View {
         HStack(spacing: 40) {
             VStack {
@@ -169,7 +169,7 @@ struct PromptpayView: View {
             }
         }
     }
-
+    
     private func imageUploadBox(image: UIImage?, label: String) -> some View {
         ZStack {
             Rectangle()
@@ -189,9 +189,9 @@ struct PromptpayView: View {
         }
         .animation(.easeInOut, value: image)
     }
-
+    
     private enum PickerType { case qr, slip }
-
+    
     private func pickerButton(for type: PickerType) -> some View {
         PhotosPicker(selection: Binding(
             get: { nil },
@@ -215,7 +215,7 @@ struct PromptpayView: View {
                 .cornerRadius(10)
         }
     }
-
+    
     private func nextStepButton(condition: Bool, action: @escaping () -> Void) -> some View {
         Button("ถัดไป") {
             action()
@@ -226,7 +226,7 @@ struct PromptpayView: View {
         .foregroundColor(.white)
         .cornerRadius(10)
     }
-
+    
     private func imageThumbnail(image: UIImage) -> some View {
         Image(uiImage: image)
             .resizable()
@@ -237,7 +237,7 @@ struct PromptpayView: View {
                 isFullScreenImagePresented = true
             }
     }
-
+    
     private func settleDebt() {
         guard let amountValue = Double(amount), amountValue > 0 else {
             presentationMode.wrappedValue.dismiss()
@@ -248,8 +248,13 @@ struct PromptpayView: View {
         let currentUserID = Auth.auth().currentUser?.uid ?? ""
 
         switch context {
-        case .group(let groupId):
-            let docId = "\(receiverName)_to_\(payerName)"
+        case .group(let groupId, let receiverUID):
+            guard currentUserID != receiverUID else {
+                alertInvalidTransaction()
+                return
+            }
+
+            let docId = "\(currentUserID)_to_\(receiverUID)"
             let balancesRef = db.collection("Groups").document(groupId).collection("Balances").document(docId)
 
             balancesRef.getDocument { snapshot, _ in
@@ -261,6 +266,25 @@ struct PromptpayView: View {
                 } else {
                     balancesRef.updateData(["amount": newDebt]) { _ in showConfirmationAlert = true }
                 }
+
+                // ✅ บันทึกประวัติ
+                let record: [String: Any] = [
+                    "date": Timestamp(date: Date()),
+                    "amount": amountValue,
+                    "description": "คืนเงินให้ \(receiverName)",
+                    "isIncome": false
+                ]
+                db.collection("Users").document(currentUserID)
+                    .collection("TransactionHistory").addDocument(data: record)
+
+                let incomeRecord: [String: Any] = [
+                    "date": Timestamp(date: Date()),
+                    "amount": amountValue,
+                    "description": "ได้รับเงินจาก \(payerName)",
+                    "isIncome": true
+                ]
+                db.collection("Users").document(receiverUID)
+                    .collection("TransactionHistory").addDocument(data: incomeRecord)
             }
 
         case .friend(let friendUID):
@@ -276,7 +300,34 @@ struct PromptpayView: View {
                 } else {
                     ref.updateData(["amount": newDebt]) { _ in showConfirmationAlert = true }
                 }
+
+                // ✅ บันทึกประวัติ (เฉพาะฝั่งเรา)
+                let record: [String: Any] = [
+                    "date": Timestamp(date: Date()),
+                    "amount": amountValue,
+                    "description": "คืนเงินให้ \(receiverName)",
+                    "isIncome": false
+                ]
+                db.collection("Users").document(currentUserID)
+                    .collection("TransactionHistory").addDocument(data: record)
+
+                // ✅ บันทึกฝั่งเพื่อน
+                let incomeRecord: [String: Any] = [
+                    "date": Timestamp(date: Date()),
+                    "amount": amountValue,
+                    "description": "ได้รับเงินจาก \(payerName)",
+                    "isIncome": true
+                ]
+                db.collection("Users").document(friendUID)
+                    .collection("TransactionHistory").addDocument(data: incomeRecord)
             }
         }
     }
+
+    
+    private func alertInvalidTransaction() {
+        // กรณีห้ามคืนเงินให้ตัวเอง
+        showConfirmationAlert = true
+    }
+    
 }

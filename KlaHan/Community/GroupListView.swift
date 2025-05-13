@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import FirebaseAuth
 import FirebaseFirestore
+import FirebaseAuth
 
 struct GroupListView: View {
     @State private var groups: [Groups] = []
@@ -17,35 +17,30 @@ struct GroupListView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            // Header
+            // MARK: - Header
             HStack {
-                Button(action: {
+                Button {
                     isInboxPresented = true
-                }) {
-                    HStack {
-                        Image(systemName: "envelope.badge")
-                        Text("Invitations")
-                    }
+                } label: {
+                    Label("Invitations", systemImage: "envelope.badge")
                 }
 
                 Spacer()
 
-                Button(action: {
+                Button {
                     isPresented = true
-                }) {
-                    HStack {
-                        Image(systemName: "plus.circle")
-                        Text("Create Group")
-                    }
+                } label: {
+                    Label("Create Group", systemImage: "plus.circle")
                 }
             }
             .padding([.horizontal, .top])
 
-            // List of groups
+            // MARK: - Group List
             List(groups, id: \.id) { group in
                 let amountOwed = myGroupDebts[group.id] ?? 0.0
+                let currentUID = Auth.auth().currentUser?.uid ?? ""
 
-                NavigationLink(destination: GroupDetailView(groupId: group.id)) {
+                NavigationLink(destination: GroupDetailView(groupId: group.id, currentUID: currentUID)) {
                     HStack {
                         Circle()
                             .fill(Color.teal)
@@ -76,7 +71,7 @@ struct GroupListView: View {
         }
     }
 
-    // MARK: - Fetch Groups
+    // MARK: - Firestore
     func fetchUserGroups() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
 
@@ -85,45 +80,58 @@ struct GroupListView: View {
             .getDocuments { snapshot, error in
                 guard let docs = snapshot?.documents else { return }
 
-                let fetchedGroups = docs.map { doc -> Groups in
-                    let data = doc.data()
-                    return Groups(
+                let fetchedGroups = docs.map { doc in
+                    Groups(
                         id: doc.documentID,
-                        subject: data["subject"] as? String ?? "Untitled",
-                        members: data["members"] as? [String] ?? [],
-                        balance: nil
+                        subject: doc["subject"] as? String ?? "Unnamed",
+                        members: doc["members"] as? [String] ?? []
                     )
                 }
 
                 self.groups = fetchedGroups
 
                 for group in fetchedGroups {
-                    fetchMyDebtInGroup(groupId: group.id)
+                    fetchMyDebtInGroup(groupId: group.id) // ← เรียกตรงนี้
                 }
             }
     }
 
-    // MARK: - Fetch debt per group
+
     func fetchMyDebtInGroup(groupId: String) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
 
         Firestore.firestore().collection("Groups").document(groupId)
-            .collection("Balances")
-            .whereField("consumer", isEqualTo: uid)
+            .collection("Transactions")
             .getDocuments { snapshot, error in
                 guard let docs = snapshot?.documents else { return }
 
-                let total = docs.reduce(0.0) { result, doc in
-                    let amount = doc.data()["amount"] as? Double ?? 0.0
-                    return result + amount
+                var totalOwed: Double = 0
+
+                for doc in docs {
+                    let data = doc.data()
+
+                    guard
+                        let payer = data["payer"] as? [String: Any],
+                        let payerUID = payer["uid"] as? String,
+                        let consumers = data["consumers"] as? [[String: Any]],
+                        let amountPer = data["amountPerConsumer"] as? Double
+                    else { continue }
+
+                    if payerUID != uid,
+                       consumers.contains(where: { $0["uid"] as? String == uid }) {
+                        totalOwed += amountPer
+                    }
                 }
 
                 DispatchQueue.main.async {
-                    myGroupDebts[groupId] = total
+                    self.myGroupDebts[groupId] = totalOwed
                 }
             }
     }
+
+
 }
+
 
 // MARK: - Model
 

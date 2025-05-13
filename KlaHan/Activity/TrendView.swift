@@ -7,71 +7,100 @@
 
 import SwiftUI
 import Charts
+import FirebaseFirestore
+import FirebaseAuth
 
-struct TrendData: Identifiable {
+struct TransactionRecord: Identifiable {
     var id = UUID()
     var date: Date
+    var description: String
     var amount: Double
+    var isIncome: Bool
 }
 
 struct TrendView: View {
-    // ตัวอย่างข้อมูลยอดหนี้ในแต่ละวัน
-    let trendData: [TrendData] = [
-        TrendData(date: Calendar.current.date(byAdding: .day, value: -6, to: Date())!, amount: 10000),
-        TrendData(date: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, amount: 15000),
-        TrendData(date: Calendar.current.date(byAdding: .day, value: -4, to: Date())!, amount: 12000),
-        TrendData(date: Calendar.current.date(byAdding: .day, value: -3, to: Date())!, amount: 18000),
-        TrendData(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, amount: 22000),
-        TrendData(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, amount: 21000),
-        TrendData(date: Date(), amount: 25000)
-    ]
+    @State private var transactions: [TransactionRecord] = []
 
     var body: some View {
         VStack {
-            HStack {
-                Image(systemName: "chart.bar")
-                Spacer()
-                Text("Trend")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                Spacer()
-                Image(systemName: "magnifyingglass")
-            }
-            .padding()
-
-            Text("Debt Trend Over Time")
-                .font(.headline)
+            Text("แนวโน้มยอดเงิน")
+                .font(.title2)
+                .bold()
                 .padding(.top)
 
-            Chart(trendData) { data in
-                LineMark(
-                    x: .value("Date", data.date),
-                    y: .value("Debt", data.amount)
-                )
-                .interpolationMethod(.catmullRom)
-                .foregroundStyle(.teal)
-                .symbol(Circle())
-                .lineStyle(StrokeStyle(lineWidth: 2))
+            if transactions.isEmpty {
+                ProgressView("กำลังโหลด...")
+                    .padding()
+            } else {
+                Chart(transactions) { item in
+                    LineMark(
+                        x: .value("วันที่", item.date),
+                        y: .value("จำนวนเงิน", item.amount)
+                    )
+                    .interpolationMethod(.catmullRom)
+                    .foregroundStyle(item.isIncome ? .green : .red)
+                    .symbol(Circle())
+                }
+                .frame(height: 250)
+                .padding()
             }
-            .frame(height: 250)
-            .padding()
 
-            Spacer()
+            Divider().padding(.vertical)
 
-            // Bottom Tab Bar (แบบเดียวกับ CommunityView)
-            HStack {
-                Image(systemName: "person")
-                Spacer()
-                Image(systemName: "chart.bar")
-                Spacer()
-                Image(systemName: "qrcode.viewfinder")
-                Spacer()
-                Image(systemName: "dollarsign.circle")
-                Spacer()
-                Image(systemName: "photo")
+            Text("ประวัติการชำระ / รับเงิน")
+                .font(.headline)
+                .padding(.horizontal)
+
+            List(transactions.sorted(by: { $0.date > $1.date })) { record in
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text(record.description)
+                            .font(.subheadline)
+                        Text(formattedDate(record.date))
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    Spacer()
+                    Text("฿\(record.amount, specifier: "%.2f")")
+                        .foregroundColor(record.isIncome ? .green : .red)
+                }
+                .padding(.vertical, 4)
             }
-            .padding()
+            .listStyle(.plain)
         }
+        .onAppear(perform: fetchHistory)
+        .padding(.horizontal)
+    }
+
+    func fetchHistory() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+
+        let db = Firestore.firestore()
+        db.collection("Users").document(uid).collection("TransactionHistory")
+            .order(by: "date", descending: true)
+            .getDocuments { snapshot, error in
+                guard let docs = snapshot?.documents else { return }
+                self.transactions = docs.compactMap { doc in
+                    let data = doc.data()
+                    guard let timestamp = data["date"] as? Timestamp,
+                          let amount = data["amount"] as? Double,
+                          let description = data["description"] as? String,
+                          let isIncome = data["isIncome"] as? Bool else { return nil }
+
+                    return TransactionRecord(
+                        date: timestamp.dateValue(),
+                        description: description,
+                        amount: amount,
+                        isIncome: isIncome
+                    )
+                }
+            }
+    }
+
+    func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 }
-
