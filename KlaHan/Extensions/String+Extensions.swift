@@ -12,3 +12,7 @@ extension String {
         return self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
+
+extension Notification.Name {
+    static let didSettleGroupDebt = Notification.Name("didSettleGroupDebt")
+}

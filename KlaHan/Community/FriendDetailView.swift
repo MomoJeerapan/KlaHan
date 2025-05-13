@@ -7,32 +7,33 @@
 
 import SwiftUI
 import Firebase
+import FirebaseAuth
 
 struct FriendDetailView: View {
     let friendID: String
-    @State private var friendName: String = "ไม่มีประวิติการยืมเงิน"
-    @State private var transactions: [(date: String, desc: String, amount: String)] = []
-
+    
+    @State private var friendName: String = "ไม่มีประวัติการยืมเงิน"
+    @State private var transactions: [TransactionRecord] = []
+    
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: "person.circle.fill")
                 .resizable()
                 .frame(width: 100, height: 100)
                 .foregroundColor(.teal)
-
+            
             Text(friendName)
                 .font(.title.bold())
                 .foregroundColor(.gray)
-
-
+            
             TabView {
-                ForEach(transactions, id: \.date) { item in
+                ForEach(transactions) { item in
                     VStack {
-                        Text("วันที่ \(item.date)")
+                        Text("วันที่ \(formattedDate(item.date))")
                             .font(.headline)
-                        Text(item.desc)
+                        Text(item.description)
                             .font(.title2)
-                        Text(item.amount)
+                        Text("฿\(item.amount, specifier: "%.2f")")
                             .font(.title)
                             .bold()
                     }
@@ -40,23 +41,23 @@ struct FriendDetailView: View {
                     .frame(maxWidth: .infinity)
                     .background(Color.teal.opacity(0.2))
                     .cornerRadius(12)
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
             .tabViewStyle(PageTabViewStyle())
             .frame(height: 160)
-
+            
             Spacer()
-
+            
             HStack(spacing: 12) {
                 NavigationLink(destination:
-                    PromptpayView(
-                        payerName: "ฉัน",
-                        receiverName: "แก",
-                        payerImage: Image(systemName: "person.circle.fill"),
-                        receiverImage: Image(systemName: "person.circle.fill"),
-                        context: .friend(friendUID: friendID)
-                    )
+                                PromptpayView(
+                                    payerName: "ฉัน",
+                                    receiverName: friendName,
+                                    payerImage: Image(systemName: "person.circle.fill"),
+                                    receiverImage: Image(systemName: "person.circle.fill"),
+                                    context: .friend(friendUID: friendID)
+                                )
                 ) {
                     Text("คืนเงิน")
                         .font(.subheadline)
@@ -66,7 +67,7 @@ struct FriendDetailView: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
-
+                
                 NavigationLink(destination: ExchangeView()) {
                     Text("แปลงเงิน")
                         .font(.subheadline)
@@ -75,8 +76,8 @@ struct FriendDetailView: View {
                         .background(Color.teal.opacity(0.8))
                         .foregroundColor(.white)
                         .cornerRadius(10)
-                    }
                 }
+            }
             .padding(.bottom)
         }
         .padding(.top)
@@ -84,10 +85,16 @@ struct FriendDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             fetchFriendInfo()
-            fetchFriendTransactions()
+            fetchMyTransactionsWithFriend()
         }
     }
-
+    
+    func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
+    
     func fetchFriendInfo() {
         let db = Firestore.firestore()
         db.collection("Users").document(friendID).getDocument { snap, error in
@@ -96,27 +103,41 @@ struct FriendDetailView: View {
             }
         }
     }
-
-    func fetchFriendTransactions() {
+    
+    func fetchMyTransactionsWithFriend() {
+        guard let myUID = Auth.auth().currentUser?.uid else { return }
+        
         let db = Firestore.firestore()
-        db.collection("Users").document(friendID).collection("Transactions")
+        db.collection("Users").document(myUID)
+            .collection("TransactionHistory")
             .order(by: "date", descending: true)
-            .getDocuments { snapshot, error in
+            .getDocuments { snapshot, _ in
                 guard let docs = snapshot?.documents else { return }
-                self.transactions = docs.map { doc in
+                
+                self.transactions = docs.compactMap { doc in
                     let data = doc.data()
-                    let date = (data["date"] as? Timestamp)?.dateValue() ?? Date()
-                    let formatter = DateFormatter()
-                    formatter.dateStyle = .medium
-                    let dateString = formatter.string(from: date)
-
-                    return (
-                        date: dateString,
-                        desc: data["description"] as? String ?? "-",
-                        amount: "฿\(data["amount"] as? Double ?? 0)"
+                    
+                    guard
+                        let amount = data["amount"] as? Double,
+                        let description = data["description"] as? String,
+                        let timestamp = data["date"] as? Timestamp,
+                        let relatedUID = data["relatedUID"] as? String,
+                        relatedUID == friendID
+                    else {
+                        return nil
+                    }
+                    
+                    let isIncome = data["isIncome"] as? Bool ?? false
+                    
+                    return TransactionRecord(
+                        date: timestamp.dateValue(),
+                        description: description,
+                        amount: amount,
+                        isIncome: isIncome
                     )
                 }
             }
     }
+
 }
 

@@ -99,6 +99,7 @@ struct SummaryEntry: Hashable {
     let consumer: UserIdentity
     let payer: UserIdentity
     let amount: Double
+    var isPaid: Bool? = false  // ✅ เพิ่มตรงนี้
 }
 
 

@@ -254,7 +254,7 @@ struct PromptpayView: View {
                 return
             }
 
-            let docId = "\(currentUserID)_to_\(receiverUID)"
+            let docId = "\(currentUserID)_to_\(receiverUID)" // consumer → payer
             let balancesRef = db.collection("Groups").document(groupId).collection("Balances").document(docId)
 
             balancesRef.getDocument { snapshot, _ in
@@ -262,30 +262,47 @@ struct PromptpayView: View {
                 let newDebt = max(0, currentDebt - amountValue)
 
                 if newDebt == 0 {
-                    balancesRef.delete { _ in showConfirmationAlert = true }
+                    // ✅ ตั้งสถานะว่า "จ่ายแล้ว"
+                    balancesRef.setData([
+                        "amount": 0,
+                        "isPaid": true,
+                        "consumer": [
+                            "uid": currentUserID,
+                            "name": payerName
+                        ],
+                        "payer": [
+                            "uid": receiverUID,
+                            "name": receiverName
+                        ]
+                    ]) { _ in
+                        showConfirmationAlert = true
+                    }
                 } else {
-                    balancesRef.updateData(["amount": newDebt]) { _ in showConfirmationAlert = true }
+                    // ✅ อัปเดตยอดใหม่ แต่ยังไม่จ่ายครบ
+                    balancesRef.updateData([
+                        "amount": newDebt
+                    ]) { _ in
+                        showConfirmationAlert = true
+                    }
                 }
-
-                // ✅ บันทึกประวัติ
-                let record: [String: Any] = [
-                    "date": Timestamp(date: Date()),
-                    "amount": amountValue,
-                    "description": "คืนเงินให้ \(receiverName)",
-                    "isIncome": false
-                ]
-                db.collection("Users").document(currentUserID)
-                    .collection("TransactionHistory").addDocument(data: record)
-
-                let incomeRecord: [String: Any] = [
-                    "date": Timestamp(date: Date()),
-                    "amount": amountValue,
-                    "description": "ได้รับเงินจาก \(payerName)",
-                    "isIncome": true
-                ]
-                db.collection("Users").document(receiverUID)
-                    .collection("TransactionHistory").addDocument(data: incomeRecord)
             }
+
+            // ✅ เพิ่มรายการลงประวัติ
+            let historyRef = db.collection("Users").document(currentUserID).collection("TransactionHistory")
+            historyRef.addDocument(data: [
+                "date": Timestamp(date: Date()),
+                "amount": amountValue,
+                "description": "คืนเงินให้ \(receiverName)",
+                "isIncome": false
+            ])
+
+            let receiverHistory = db.collection("Users").document(receiverUID).collection("TransactionHistory")
+            receiverHistory.addDocument(data: [
+                "date": Timestamp(date: Date()),
+                "amount": amountValue,
+                "description": "ได้รับเงินจาก \(payerName)",
+                "isIncome": true
+            ])
 
         case .friend(let friendUID):
             let docId = "\(friendUID)_to_\(currentUserID)"
@@ -300,30 +317,27 @@ struct PromptpayView: View {
                 } else {
                     ref.updateData(["amount": newDebt]) { _ in showConfirmationAlert = true }
                 }
-
-                // ✅ บันทึกประวัติ (เฉพาะฝั่งเรา)
-                let record: [String: Any] = [
-                    "date": Timestamp(date: Date()),
-                    "amount": amountValue,
-                    "description": "คืนเงินให้ \(receiverName)",
-                    "isIncome": false
-                ]
-                db.collection("Users").document(currentUserID)
-                    .collection("TransactionHistory").addDocument(data: record)
-
-                // ✅ บันทึกฝั่งเพื่อน
-                let incomeRecord: [String: Any] = [
-                    "date": Timestamp(date: Date()),
-                    "amount": amountValue,
-                    "description": "ได้รับเงินจาก \(payerName)",
-                    "isIncome": true
-                ]
-                db.collection("Users").document(friendUID)
-                    .collection("TransactionHistory").addDocument(data: incomeRecord)
             }
+
+            let record: [String: Any] = [
+                "date": Timestamp(date: Date()),
+                "amount": amountValue,
+                "description": "คืนเงินให้ \(receiverName)",
+                "isIncome": false
+            ]
+            db.collection("Users").document(currentUserID)
+                .collection("TransactionHistory").addDocument(data: record)
+
+            let incomeRecord: [String: Any] = [
+                "date": Timestamp(date: Date()),
+                "amount": amountValue,
+                "description": "ได้รับเงินจาก \(payerName)",
+                "isIncome": true
+            ]
+            db.collection("Users").document(friendUID)
+                .collection("TransactionHistory").addDocument(data: incomeRecord)
         }
     }
-
     
     private func alertInvalidTransaction() {
         // กรณีห้ามคืนเงินให้ตัวเอง

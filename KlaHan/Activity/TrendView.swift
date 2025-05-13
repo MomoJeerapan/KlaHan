@@ -10,13 +10,14 @@ import Charts
 import FirebaseFirestore
 import FirebaseAuth
 
-struct TransactionRecord: Identifiable {
+struct TransactionRecord: Identifiable, Hashable {
     var id = UUID()
     var date: Date
     var description: String
     var amount: Double
     var isIncome: Bool
 }
+
 
 struct TrendView: View {
     @State private var transactions: [TransactionRecord] = []

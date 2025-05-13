@@ -11,65 +11,72 @@ import FirebaseAuth
 
 struct GroupListView: View {
     @State private var groups: [Groups] = []
-    @State private var myGroupDebts: [String: Double] = [:]
-    @State private var isPresented = false
-    @State private var isInboxPresented = false
+        @State private var myGroupDebts: [String: Double] = [:]
+        @State private var isPresented = false
+        @State private var isInboxPresented = false
+        @State private var refreshTrigger = false  // เพิ่ม trigger
 
-    var body: some View {
-        VStack(alignment: .leading) {
-            // MARK: - Header
-            HStack {
-                Button {
-                    isInboxPresented = true
-                } label: {
-                    Label("Invitations", systemImage: "envelope.badge")
-                }
-
-                Spacer()
-
-                Button {
-                    isPresented = true
-                } label: {
-                    Label("Create Group", systemImage: "plus.circle")
-                }
-            }
-            .padding([.horizontal, .top])
-
-            // MARK: - Group List
-            List(groups, id: \.id) { group in
-                let amountOwed = myGroupDebts[group.id] ?? 0.0
-                let currentUID = Auth.auth().currentUser?.uid ?? ""
-
-                NavigationLink(destination: GroupDetailView(groupId: group.id, currentUID: currentUID)) {
-                    HStack {
-                        Circle()
-                            .fill(Color.teal)
-                            .frame(width: 40, height: 40)
-                        Text(group.subject)
-                            .font(.headline)
-                        Spacer()
-                        Text("฿\(amountOwed, specifier: "%.2f")")
-                            .foregroundColor(amountOwed == 0 ? .green : .red)
+        var body: some View {
+            VStack(alignment: .leading) {
+                HStack {
+                    Button {
+                        isInboxPresented = true
+                    } label: {
+                        Label("Invitations", systemImage: "envelope.badge")
                     }
-                    .padding(.vertical, 5)
+
+                    Spacer()
+
+                    Button {
+                        isPresented = true
+                    } label: {
+                        Label("Create Group", systemImage: "plus.circle")
+                    }
+                }
+                .padding([.horizontal, .top])
+
+                List(groups, id: \.id) { group in
+                    let groupId = group.id
+                    let subject = group.subject
+                    let amountOwed = myGroupDebts[groupId] ?? 0.0
+                    let currentUID = Auth.auth().currentUser?.uid ?? ""
+
+                    NavigationLink(
+                        destination: GroupDetailView(groupId: groupId, currentUID: currentUID)
+                    ) {
+                        HStack {
+                            Circle()
+                                .fill(Color.teal)
+                                .frame(width: 40, height: 40)
+                            Text(subject)
+                                .font(.headline)
+                            Spacer()
+                            Text("฿\(amountOwed, specifier: "%.2f")")
+                                .foregroundColor(amountOwed == 0 ? .green : .red)
+                        }
+                        .padding(.vertical, 5)
+                    }
+                }
+                .onAppear(perform: fetchUserGroups)
+                .onChange(of: refreshTrigger) { _ in
+                    fetchUserGroups()
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .didSettleGroupDebt)) { _ in
+                    refreshTrigger.toggle()
                 }
             }
-            .onAppear {
-                fetchUserGroups()
+            .navigationTitle("Groups")
+            .sheet(isPresented: $isPresented) {
+                NavigationStack {
+                    CreateGroupView().environmentObject(Model())
+                }
+            }
+            .sheet(isPresented: $isInboxPresented) {
+                NavigationStack {
+                    GroupInvitationInboxView()
+                }
             }
         }
-        .navigationTitle("Groups")
-        .sheet(isPresented: $isPresented) {
-            NavigationStack {
-                CreateGroupView().environmentObject(Model())
-            }
-        }
-        .sheet(isPresented: $isInboxPresented) {
-            NavigationStack {
-                GroupInvitationInboxView()
-            }
-        }
-    }
 
     // MARK: - Firestore
     func fetchUserGroups() {
@@ -100,27 +107,18 @@ struct GroupListView: View {
     func fetchMyDebtInGroup(groupId: String) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
 
-        Firestore.firestore().collection("Groups").document(groupId)
-            .collection("Transactions")
+        let db = Firestore.firestore()
+        db.collection("Groups").document(groupId)
+            .collection("Balances")
+            .whereField("consumer.uid", isEqualTo: uid)
             .getDocuments { snapshot, error in
                 guard let docs = snapshot?.documents else { return }
 
                 var totalOwed: Double = 0
 
                 for doc in docs {
-                    let data = doc.data()
-
-                    guard
-                        let payer = data["payer"] as? [String: Any],
-                        let payerUID = payer["uid"] as? String,
-                        let consumers = data["consumers"] as? [[String: Any]],
-                        let amountPer = data["amountPerConsumer"] as? Double
-                    else { continue }
-
-                    if payerUID != uid,
-                       consumers.contains(where: { $0["uid"] as? String == uid }) {
-                        totalOwed += amountPer
-                    }
+                    let amount = doc.data()["amount"] as? Double ?? 0.0
+                    totalOwed += amount
                 }
 
                 DispatchQueue.main.async {
@@ -128,7 +126,6 @@ struct GroupListView: View {
                 }
             }
     }
-
 
 }
 
