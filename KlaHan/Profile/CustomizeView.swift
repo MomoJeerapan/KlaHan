@@ -1,31 +1,31 @@
-//
-//  CustomizeView.swift
-//  KlaHan
-//
-//  Created by Jeerapan Chirachanchai on 28/4/2568 BE.
-//
-
 import SwiftUI
 
+struct OutfitItem: Identifiable {
+    let id = UUID()
+    let imageName: String
+    let title: String
+    let price: Int
+}
+
 struct CustomizeView: View {
-    @State private var selectedItem: Int? = nil
+    @State private var selectedItem: OutfitItem? = nil
     @State private var showConfirmation = false
-    @State private var coinBalance: Int = 500 // เริ่มต้นมีเหรียญเท่าไหร่ก็ใส่ตรงนี้เลย
+    @State private var coinBalance: Int = 1000
     @State private var usedCoins: Int = 0
 
-    let items = [
-        ("ชุดที่ 1", 100),
-        ("ชุดที่ 2", 100),
-        ("ชุดที่ 3", 150),
-        ("ชุดที่ 4", 150),
-        ("ชุดที่ 5", 200),
-        ("ชุดที่ 6", 300)
+    @AppStorage("selectedOutfit") var selectedOutfitName: String = ""
+
+    let items: [OutfitItem] = [
+        OutfitItem(imageName: "", title: "ไม่ใส่ชุด", price: 0),
+        OutfitItem(imageName: "Bra", title: "ชุดที่ 1", price: 100),
+        OutfitItem(imageName: "Skirt", title: "ชุดที่ 2", price: 200),
+        OutfitItem(imageName: "Clothes", title: "ชุดที่ 3", price: 500)
     ]
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                Text("เหรียญคงเหลือ: \(coinBalance) coins")
+                Text("💰 เหรียญคงเหลือ: \(coinBalance) coins")
                     .font(.headline)
                     .padding(.top)
 
@@ -34,19 +34,34 @@ struct CustomizeView: View {
                     .bold()
 
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 140))], spacing: 20) {
-                    ForEach(0..<items.count, id: \.self) { index in
-                        let item = items[index]
+                    ForEach(items) { item in
                         VStack(spacing: 10) {
-                            Rectangle()
-                                .fill(Color.blue.opacity(0.4))
-                                .frame(width: 100, height: 100)
-                                .overlay(Text(item.0).foregroundColor(.white))
+                            if item.imageName.isEmpty {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.gray.opacity(0.2))
+                                        .frame(width: 100, height: 100)
+                                    Text("No outfit")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                            } else {
+                                Image(item.imageName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .shadow(radius: 2)
+                            }
 
-                            Text("ราคา \(item.1) coins")
+                            Text(item.title)
+                                .font(.headline)
+
+                            Text("ราคา \(item.price) coins")
                                 .font(.subheadline)
 
                             Button(action: {
-                                selectedItem = index
+                                selectedItem = item
                                 showConfirmation = true
                             }) {
                                 Image(systemName: "cart.fill.badge.plus")
@@ -70,15 +85,15 @@ struct CustomizeView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Customize")
         .alert(isPresented: $showConfirmation) {
-            let item = items[selectedItem ?? 0]
+            let item = selectedItem!
             return Alert(
                 title: Text("ยืนยันการซื้อ"),
-                message: Text("คุณต้องการซื้อ \(item.0) ในราคา \(item.1) coins ใช่ไหม?"),
+                message: Text("คุณต้องการซื้อ \(item.title) ในราคา \(item.price) coins ใช่ไหม?"),
                 primaryButton: .default(Text("ซื้อ")) {
-                    if coinBalance >= item.1 {
-                        coinBalance -= item.1
-                        usedCoins += item.1
-                        // ตรงนี้สามารถเพิ่ม logic เพิ่มชุดให้ user ได้ตามต้องการ
+                    if coinBalance >= item.price {
+                        coinBalance -= item.price
+                        usedCoins += item.price
+                        selectedOutfitName = item.imageName
                     }
                 },
                 secondaryButton: .cancel()

@@ -11,6 +11,8 @@
 		3919A5E42DBFF0170024B201 /* TopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3919A5E32DBFF0170024B201 /* TopUpView.swift */; };
 		3919A5E62DBFF02A0024B201 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3919A5E52DBFF02A0024B201 /* ProfileView.swift */; };
 		3919A5E82DBFF0420024B201 /* CustomizeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3919A5E72DBFF0420024B201 /* CustomizeView.swift */; };
+		397A50C02DD3EA9300A70D1B /* TransactionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397A50BF2DD3EA9300A70D1B /* TransactionRecord.swift */; };
+		397A50C22DD3EF9D00A70D1B /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397A50C12DD3EF9D00A70D1B /* NotificationView.swift */; };
 		39A475D62DD23D06000F87AF /* CoinStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A475D52DD23D06000F87AF /* CoinStatusView.swift */; };
 		39A475D92DD23D21000F87AF /* ChangePassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A475D72DD23D21000F87AF /* ChangePassView.swift */; };
 		39A475DA2DD23D21000F87AF /* InformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A475D82DD23D21000F87AF /* InformationView.swift */; };
@@ -56,6 +58,8 @@
 		3919A5E32DBFF0170024B201 /* TopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopUpView.swift; sourceTree = "<group>"; };
 		3919A5E52DBFF02A0024B201 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		3919A5E72DBFF0420024B201 /* CustomizeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizeView.swift; sourceTree = "<group>"; };
+		397A50BF2DD3EA9300A70D1B /* TransactionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecord.swift; sourceTree = "<group>"; };
+		397A50C12DD3EF9D00A70D1B /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
 		39A475D52DD23D06000F87AF /* CoinStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinStatusView.swift; sourceTree = "<group>"; };
 		39A475D72DD23D21000F87AF /* ChangePassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePassView.swift; sourceTree = "<group>"; };
 		39A475D82DD23D21000F87AF /* InformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationView.swift; sourceTree = "<group>"; };
@@ -172,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				39D6F29D2DC151F8008C84DE /* TrendView.swift */,
+				397A50BF2DD3EA9300A70D1B /* TransactionRecord.swift */,
 			);
 			path = Activity;
 			sourceTree = "<group>";
@@ -232,6 +237,7 @@
 				F76D85132DC3F68E0000F441 /* Extensions */,
 				F7DA0EAF2DBCEC9B00DD8016 /* KlaHanApp.swift */,
 				F7DA0EB12DBCEC9B00DD8016 /* ContentView.swift */,
+				397A50C12DD3EF9D00A70D1B /* NotificationView.swift */,
 				F70F6D142DBFEC2F00C24C27 /* HomeView.swift */,
 				F7DA0EB32DBCEC9D00DD8016 /* Assets.xcassets */,
 				F7B8AD4A2DC175BA00AE2D9F /* GoogleService-Info.plist */,
@@ -331,6 +337,7 @@
 			files = (
 				F76D851B2DC3F9A50000F441 /* Model.swift in Sources */,
 				39D6F29E2DC151F8008C84DE /* TrendView.swift in Sources */,
+				397A50C02DD3EA9300A70D1B /* TransactionRecord.swift in Sources */,
 				3919A5E62DBFF02A0024B201 /* ProfileView.swift in Sources */,
 				39A475DE2DD25386000F87AF /* TranscriptSelectionView.swift in Sources */,
 				F7BB78912DD193BC0057DC9A /* CameraUI.swift in Sources */,
@@ -363,6 +370,7 @@
 				3919A5E22DBFEFFD0024B201 /* ScanView.swift in Sources */,
 				F731AA2D2DCAC28000DEB0E7 /* GroupInvitationInboxView.swift in Sources */,
 				F7B8AD3A2DC1698500AE2D9F /* FriendDetailView.swift in Sources */,
+				397A50C22DD3EF9D00A70D1B /* NotificationView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

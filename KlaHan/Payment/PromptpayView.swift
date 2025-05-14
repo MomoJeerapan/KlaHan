@@ -238,104 +238,89 @@ struct PromptpayView: View {
             }
     }
     
+    // ✅ ปรับ settleDebt() สำหรับ FRIEND ให้ทำงานเฉพาะฝั่ง consumer
     private func settleDebt() {
         guard let amountValue = Double(amount), amountValue > 0 else {
             presentationMode.wrappedValue.dismiss()
             return
         }
-
+        
         let db = Firestore.firestore()
         let currentUserID = Auth.auth().currentUser?.uid ?? ""
-
+        
         switch context {
         case .group(let groupId, let receiverUID):
-            guard currentUserID != receiverUID else {
-                alertInvalidTransaction()
-                return
-            }
-
-            let docId = "\(currentUserID)_to_\(receiverUID)" // consumer → payer
+            let docId = "\(currentUserID)_to_\(receiverUID)"
             let balancesRef = db.collection("Groups").document(groupId).collection("Balances").document(docId)
-
+            
             balancesRef.getDocument { snapshot, _ in
-                let currentDebt = snapshot?.data()?["amount"] as? Double ?? 0.0
+                let currentDebt = snapshot?.data()? ["amount"] as? Double ?? 0.0
                 let newDebt = max(0, currentDebt - amountValue)
-
+                
                 if newDebt == 0 {
-                    // ✅ ตั้งสถานะว่า "จ่ายแล้ว"
                     balancesRef.setData([
                         "amount": 0,
                         "isPaid": true,
-                        "consumer": [
-                            "uid": currentUserID,
-                            "name": payerName
-                        ],
-                        "payer": [
-                            "uid": receiverUID,
-                            "name": receiverName
-                        ]
-                    ]) { _ in
-                        showConfirmationAlert = true
-                    }
+                        "consumer": ["uid": currentUserID, "name": payerName],
+                        "payer": ["uid": receiverUID, "name": receiverName]
+                    ]) { _ in showConfirmationAlert = true }
                 } else {
-                    // ✅ อัปเดตยอดใหม่ แต่ยังไม่จ่ายครบ
-                    balancesRef.updateData([
-                        "amount": newDebt
-                    ]) { _ in
-                        showConfirmationAlert = true
-                    }
+                    balancesRef.updateData(["amount": newDebt]) { _ in showConfirmationAlert = true }
                 }
             }
-
-            // ✅ เพิ่มรายการลงประวัติ
-            let historyRef = db.collection("Users").document(currentUserID).collection("TransactionHistory")
-            historyRef.addDocument(data: [
-                "date": Timestamp(date: Date()),
-                "amount": amountValue,
-                "description": "คืนเงินให้ \(receiverName)",
-                "isIncome": false
-            ])
-
-            let receiverHistory = db.collection("Users").document(receiverUID).collection("TransactionHistory")
-            receiverHistory.addDocument(data: [
-                "date": Timestamp(date: Date()),
-                "amount": amountValue,
-                "description": "ได้รับเงินจาก \(payerName)",
-                "isIncome": true
-            ])
-
+            
+            db.collection("Users").document(currentUserID).collection("TransactionHistory")
+                .addDocument(data: [
+                    "date": Timestamp(date: Date()),
+                    "amount": amountValue,
+                    "description": "คืนเงินให้ \(receiverName)",
+                    "isIncome": false,
+                    "relatedUID": receiverUID
+                ])
+            
+            db.collection("Users").document(receiverUID).collection("TransactionHistory")
+                .addDocument(data: [
+                    "date": Timestamp(date: Date()),
+                    "amount": amountValue,
+                    "description": "ได้รับเงินจาก \(payerName)",
+                    "isIncome": true,
+                    "relatedUID": currentUserID
+                ])
+            
         case .friend(let friendUID):
-            let docId = "\(friendUID)_to_\(currentUserID)"
+            let docId = "\(currentUserID)_to_\(friendUID)"
             let ref = db.collection("Users").document(currentUserID).collection("FriendBalances").document(docId)
-
-            ref.getDocument { snapshot, _ in
-                let currentDebt = snapshot?.data()?["amount"] as? Double ?? 0.0
+            
+            ref.getDocument { snap, _ in
+                let currentDebt = snap?.data()? ["amount"] as? Double ?? 0.0
                 let newDebt = max(0, currentDebt - amountValue)
-
+                
                 if newDebt == 0 {
-                    ref.delete { _ in showConfirmationAlert = true }
+                    ref.updateData([
+                        "amount": 0,
+                        "isPaid": true
+                    ]) { _ in
+                        showConfirmationAlert = true
+                    }
                 } else {
-                    ref.updateData(["amount": newDebt]) { _ in showConfirmationAlert = true }
+                    ref.updateData(["amount": newDebt]) { _ in
+                        showConfirmationAlert = true
+                    }
                 }
             }
-
+            
+            // ✅ เพิ่ม log แค่ฝั่งเราเท่านั้น (consumer)
             let record: [String: Any] = [
                 "date": Timestamp(date: Date()),
                 "amount": amountValue,
                 "description": "คืนเงินให้ \(receiverName)",
-                "isIncome": false
+                "isIncome": false,
+                "relatedUID": friendUID
             ]
             db.collection("Users").document(currentUserID)
                 .collection("TransactionHistory").addDocument(data: record)
-
-            let incomeRecord: [String: Any] = [
-                "date": Timestamp(date: Date()),
-                "amount": amountValue,
-                "description": "ได้รับเงินจาก \(payerName)",
-                "isIncome": true
-            ]
-            db.collection("Users").document(friendUID)
-                .collection("TransactionHistory").addDocument(data: incomeRecord)
+            
+            // ❌ ไม่เขียน log ฝั่ง friendUID เพราะ rules ไม่อนุญาต และไม่จำเป็น
         }
     }
     
@@ -343,5 +328,4 @@ struct PromptpayView: View {
         // กรณีห้ามคืนเงินให้ตัวเอง
         showConfirmationAlert = true
     }
-    
 }

@@ -52,13 +52,33 @@ struct TranscriptView: View {
             .padding()
             .navigationTitle("Transcript")
             .onAppear {
-                // Combine OCR text into a single editable string
                 if transcriptText.isEmpty {
-                    transcriptText = imageOCR.observations
+                    let rawLines = imageOCR.observations
                         .map { $0.topCandidates(1).first?.string ?? "" }
-                        .joined(separator: "\n")
+                        .filter { !$0.isEmpty }
+
+                    var processedLines: [String] = []
+                    var index = 0
+
+                    while index < rawLines.count {
+                        let line = rawLines[index]
+
+                        // ตรวจว่าบรรทัดนี้เป็นตัวเลข (ราคาหรือไม่)
+                        if let price = Double(line), index > 0 {
+                            // รวมกับบรรทัดก่อนหน้า
+                            let prev = processedLines.removeLast()
+                            processedLines.append("\(prev) \(line)")
+                        } else {
+                            processedLines.append(line)
+                        }
+
+                        index += 1
+                    }
+
+                    transcriptText = processedLines.joined(separator: "\n")
                 }
             }
+
         }
     }
 }

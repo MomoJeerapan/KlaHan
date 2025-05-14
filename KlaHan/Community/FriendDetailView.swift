@@ -1,58 +1,34 @@
-//
-//  FriendDetailView.swift
-//  KlaHan
-//
-//  Created by Jeerapan Chirachanchai on 30/4/2568 BE.
-//
-
 import SwiftUI
-import Firebase
 import FirebaseAuth
+import FirebaseFirestore
 
 struct FriendDetailView: View {
     let friendID: String
     
     @State private var friendName: String = "ไม่มีประวัติการยืมเงิน"
-    @State private var transactions: [TransactionRecord] = []
+    @State private var unpaidBalances: [SummaryEntry] = []
+    @State private var paidBalances: [SummaryEntry] = []
+    @State private var currentUserName: String = "ฉัน"
     
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.teal)
+                .resizable().frame(width: 100, height: 100).foregroundColor(.teal)
             
-            Text(friendName)
-                .font(.title.bold())
-                .foregroundColor(.gray)
+            Text(friendName).font(.title.bold()).foregroundColor(.gray)
             
-            TabView {
-                ForEach(transactions) { item in
-                    VStack {
-                        Text("วันที่ \(formattedDate(item.date))")
-                            .font(.headline)
-                        Text(item.description)
-                            .font(.title2)
-                        Text("฿\(item.amount, specifier: "%.2f")")
-                            .font(.title)
-                            .bold()
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.teal.opacity(0.2))
-                    .cornerRadius(12)
-                    .padding(.horizontal)
-                }
-            }
-            .tabViewStyle(PageTabViewStyle())
-            .frame(height: 160)
+            Text("สรุปยอดคืนเงิน (ยังไม่จ่าย)").font(.headline).padding(.top)
+            balanceSection(entries: unpaidBalances, symbol: "❌", color: .red)
+            
+            Text("ประวัติการชำระ (จ่ายแล้ว)").font(.headline).padding(.top)
+            balanceSection(entries: paidBalances, symbol: "✅", color: .green)
             
             Spacer()
             
             HStack(spacing: 12) {
                 NavigationLink(destination:
                                 PromptpayView(
-                                    payerName: "ฉัน",
+                                    payerName: currentUserName,
                                     receiverName: friendName,
                                     payerImage: Image(systemName: "person.circle.fill"),
                                     receiverImage: Image(systemName: "person.circle.fill"),
@@ -60,84 +36,100 @@ struct FriendDetailView: View {
                                 )
                 ) {
                     Text("คืนเงิน")
-                        .font(.subheadline)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 8)
-                        .background(Color.teal.opacity(0.8))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .padding().background(Color.teal)
+                        .foregroundColor(.white).cornerRadius(10)
                 }
                 
                 NavigationLink(destination: ExchangeView()) {
                     Text("แปลงเงิน")
-                        .font(.subheadline)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 8)
-                        .background(Color.teal.opacity(0.8))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .padding().background(Color.teal)
+                        .foregroundColor(.white).cornerRadius(10)
                 }
-            }
-            .padding(.bottom)
+            }.padding(.bottom)
         }
         .padding(.top)
         .navigationTitle(friendName)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             fetchFriendInfo()
-            fetchMyTransactionsWithFriend()
+            fetchCurrentUserName()
+            fetchFriendBalances()
         }
     }
     
-    func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: date)
+    private func balanceSection(entries: [SummaryEntry], symbol: String, color: Color) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(entries, id: \ .self) { entry in
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("\(entry.consumer.name) → \(entry.payer.name)").font(.subheadline)
+                            Text("฿\(abs(entry.amount), specifier: "%.2f")")
+                                .font(.caption).foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Text(symbol).foregroundColor(color)
+                    }
+                    Divider()
+                }
+            }.padding(.horizontal)
+        }
     }
     
-    func fetchFriendInfo() {
-        let db = Firestore.firestore()
-        db.collection("Users").document(friendID).getDocument { snap, error in
-            if let data = snap?.data(), let name = data["Username"] as? String {
+    private func fetchFriendInfo() {
+        Firestore.firestore().collection("Users").document(friendID).getDocument { snap, _ in
+            if let name = snap?.data()? ["Username"] as? String {
                 self.friendName = name
             }
         }
     }
     
-    func fetchMyTransactionsWithFriend() {
+    private func fetchCurrentUserName() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Firestore.firestore().collection("Users").document(uid).getDocument { snap, _ in
+            if let name = snap?.data()? ["Username"] as? String {
+                self.currentUserName = name
+            }
+        }
+    }
+    
+    private func fetchFriendBalances() {
         guard let myUID = Auth.auth().currentUser?.uid else { return }
-        
         let db = Firestore.firestore()
+        
+        let docID = "\(myUID)_to_\(friendID)"
         db.collection("Users").document(myUID)
-            .collection("TransactionHistory")
-            .order(by: "date", descending: true)
-            .getDocuments { snapshot, _ in
-                guard let docs = snapshot?.documents else { return }
+            .collection("FriendBalances")
+            .document(docID)
+            .getDocument { snap, _ in
+                guard let data = snap?.data(),
+                      let consumer = data["consumer"] as? [String: String],
+                      let payer = data["payer"] as? [String: String],
+                      let amount = data["amount"] as? Double,
+                      let isPaid = data["isPaid"] as? Bool,
+                      consumer["uid"] == myUID,    // ✅ ต้องเป็น consumer
+                      payer["uid"] == friendID else { return }
                 
-                self.transactions = docs.compactMap { doc in
-                    let data = doc.data()
-                    
-                    guard
-                        let amount = data["amount"] as? Double,
-                        let description = data["description"] as? String,
-                        let timestamp = data["date"] as? Timestamp,
-                        let relatedUID = data["relatedUID"] as? String,
-                        relatedUID == friendID
-                    else {
-                        return nil
-                    }
-                    
-                    let isIncome = data["isIncome"] as? Bool ?? false
-                    
-                    return TransactionRecord(
-                        date: timestamp.dateValue(),
-                        description: description,
-                        amount: amount,
-                        isIncome: isIncome
-                    )
+                let consumerUID = consumer["uid"] ?? ""
+                let payerUID = payer["uid"] ?? ""
+                let consumerName = consumer["name"] ?? consumerUID
+                let payerName = payer["name"] ?? payerUID
+                
+                guard consumerUID == myUID, payerUID == friendID else { return }
+                
+                let entry = SummaryEntry(
+                    consumer: UserIdentity(uid: consumerUID, name: consumerName),
+                    payer: UserIdentity(uid: payerUID, name: payerName),
+                    amount: amount,
+                    isPaid: isPaid
+                )
+                
+                if isPaid {
+                    self.paidBalances = [entry]
+                } else {
+                    self.unpaidBalances = [entry]
                 }
             }
     }
-
 }
 

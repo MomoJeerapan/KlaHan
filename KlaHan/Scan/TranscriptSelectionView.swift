@@ -27,6 +27,10 @@ struct TranscriptSelectionView: View {
     // Friend
     @State private var friends: [UserIdentity] = []
     @State private var selectedFriend: UserIdentity?
+    @State private var selectedFriendPayer: UserIdentity?
+
+    // Current user
+    @State private var currentUser: UserIdentity = UserIdentity(uid: "", name: "Loading...")
 
     // Shared
     @State private var showAlert = false
@@ -55,11 +59,7 @@ struct TranscriptSelectionView: View {
             itemListView
 
             Button("เพิ่มรายการ") {
-                if mode == .group {
-                    handleGroupSave()
-                } else {
-                    handleFriendSave()
-                }
+                handleSave()
             }
             .frame(maxWidth: .infinity)
             .padding()
@@ -72,6 +72,7 @@ struct TranscriptSelectionView: View {
         }
         .padding()
         .onAppear {
+            loadCurrentUser()
             fetchGroups()
             fetchFriends()
         }
@@ -82,7 +83,6 @@ struct TranscriptSelectionView: View {
         }
     }
 
-    // MARK: - Group UI
     var groupSelectionView: some View {
         VStack(spacing: 16) {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -115,10 +115,17 @@ struct TranscriptSelectionView: View {
         }
     }
 
-    // MARK: - Friend UI
     var friendSelectionView: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("เลือกเพื่อน").font(.headline).padding(.horizontal)
+
+            Picker("ผู้จ่าย", selection: $selectedFriendPayer) {
+                Text("เลือกผู้จ่าย").tag(UserIdentity?.none)
+                ForEach([currentUser] + (selectedFriend.map { [$0] } ?? [])) { person in
+                    Text(person.name).tag(Optional(person))
+                }
+            }
+            .pickerStyle(.menu)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
@@ -140,8 +147,6 @@ struct TranscriptSelectionView: View {
         }
     }
 
-
-    // MARK: - Shared Item List
     var itemListView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -154,34 +159,22 @@ struct TranscriptSelectionView: View {
                             .keyboardType(.decimalPad)
                             .textFieldStyle(.roundedBorder)
 
-                        // MARK: - เลือกผู้บริโภค
                         Text("เลือกผู้บริโภค").font(.subheadline)
-
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))], spacing: 8) {
-                            // ดึง current user
-                            let currentUser = UserIdentity(
-                                uid: Auth.auth().currentUser?.uid ?? "unknown",
-                                name: "ฉัน"
-                            )
-
-                            // สร้างแหล่งข้อมูลผู้บริโภค
                             let consumersSource: [UserIdentity] = {
                                 switch mode {
-                                case .group:
-                                    return groupMembers
+                                case .group: return groupMembers
                                 case .friend:
                                     if let friend = selectedFriend {
-                                        return [currentUser, friend] // ✅ เพิ่มตัวเองได้
+                                        return [currentUser, friend]
                                     } else {
-                                        return [currentUser] // ✅ ให้เลือกตัวเองอย่างเดียวก่อนเลือกเพื่อน
+                                        return [currentUser]
                                     }
                                 }
                             }()
 
-                            // แสดงผู้บริโภคที่เลือกได้
                             ForEach(consumersSource) { person in
                                 let selected = item.consumers.contains(person)
-
                                 Text(person.name)
                                     .padding(8)
                                     .frame(maxWidth: .infinity)
@@ -200,7 +193,6 @@ struct TranscriptSelectionView: View {
                                 Text("กรุณาเลือกเพื่อนก่อน").foregroundColor(.gray)
                             }
                         }
-
                         Divider()
                     }
                 }
@@ -209,27 +201,44 @@ struct TranscriptSelectionView: View {
         }
     }
 
-    // MARK: - Action: Save for Group
-    private func handleGroupSave() {
-        guard !selectedGroupId.isEmpty else {
-            alertMessage = "กรุณาเลือกกลุ่ม"; showAlert = true; return
-        }
-        guard let payer = selectedGroupPayer else {
-            alertMessage = "กรุณาเลือกผู้จ่าย"; showAlert = true; return
-        }
+    private func handleSave() {
         let validItems = items.filter { !$0.amount.isEmpty && !$0.consumers.isEmpty }
         guard !validItems.isEmpty else {
-            alertMessage = "กรุณากรอกข้อมูลรายการ"; showAlert = true; return
+            alertMessage = "กรุณากรอกข้อมูลรายการ"
+            showAlert = true
+            return
+        }
+
+        switch mode {
+        case .group:
+            handleGroupSave(validItems: validItems)
+        case .friend:
+            handleFriendSave(validItems: validItems)
+        }
+    }
+
+    private func handleGroupSave(validItems: [ParsedItem]) {
+        guard !selectedGroupId.isEmpty else {
+            alertMessage = "กรุณาเลือกกลุ่ม"
+            showAlert = true
+            return
+        }
+
+        guard let payer = selectedGroupPayer else {
+            alertMessage = "กรุณาเลือกผู้จ่าย"
+            showAlert = true
+            return
         }
 
         let db = Firestore.firestore()
         let groupRef = db.collection("Groups").document(selectedGroupId)
+        var balanceMap: [String: [String: Double]] = [:]
 
         for item in validItems {
-            let total = Double(item.amount) ?? 0
+            guard let total = Double(item.amount), !item.consumers.isEmpty else { continue }
             let perPerson = total / Double(item.consumers.count)
 
-            let data: [String: Any] = [
+            let transaction: [String: Any] = [
                 "description": item.description,
                 "amount": total,
                 "date": Timestamp(date: item.date),
@@ -238,16 +247,26 @@ struct TranscriptSelectionView: View {
                 "amountPerConsumer": perPerson
             ]
 
-            groupRef.collection("Transactions").addDocument(data: data)
+            groupRef.collection("Transactions").addDocument(data: transaction)
 
             for consumer in item.consumers where consumer.uid != payer.uid {
-                let balanceRef = groupRef.collection("Balances").document("\(consumer.uid)_to_\(payer.uid)")
+                balanceMap[consumer.uid, default: [:]][payer.uid, default: 0] += perPerson
+            }
+        }
+
+        for (consumerUID, payers) in balanceMap {
+            for (payerUID, amount) in payers {
+                let consumerName = groupMembers.first(where: { $0.uid == consumerUID })?.name ?? "Unknown"
+                let payerName = groupMembers.first(where: { $0.uid == payerUID })?.name ?? "Unknown"
+                let docId = "\(consumerUID)_to_\(payerUID)"
+                let balanceRef = groupRef.collection("Balances").document(docId)
+
                 balanceRef.getDocument { snap, _ in
-                    let current = snap?.data()?["amount"] as? Double ?? 0
+                    let currentAmount = snap?.data()?["amount"] as? Double ?? 0
                     balanceRef.setData([
-                        "consumer": ["uid": consumer.uid, "name": consumer.name],
-                        "payer": ["uid": payer.uid, "name": payer.name],
-                        "amount": current + perPerson,
+                        "consumer": ["uid": consumerUID, "name": consumerName],
+                        "payer": ["uid": payerUID, "name": payerName],
+                        "amount": currentAmount + amount,
                         "isPaid": false
                     ])
                 }
@@ -257,42 +276,102 @@ struct TranscriptSelectionView: View {
         navigateToHome = true
     }
 
-    // MARK: - Action: Save for Friend
-    private func handleFriendSave() {
-        guard let friend = selectedFriend else {
-            alertMessage = "กรุณาเลือกเพื่อน"; showAlert = true; return
+    // ✅ handleFriendSave เวอร์ชันล่าสุด: เขียนเฉพาะฝั่ง consumer ตาม Firestore rules
+    private func handleFriendSave(validItems: [ParsedItem]) {
+        guard let payer = selectedFriendPayer else {
+            alertMessage = "กรุณาเลือกผู้จ่าย"
+            showAlert = true
+            return
         }
-        let validItems = items.filter { !$0.amount.isEmpty }
-        guard !validItems.isEmpty else {
-            alertMessage = "กรุณากรอกรายการ"; showAlert = true; return
+
+        guard let _ = selectedFriend else {
+            alertMessage = "กรุณาเลือกเพื่อนก่อน"
+            showAlert = true
+            return
+        }
+
+        guard validItems.contains(where: { item in
+            item.consumers.contains(where: { $0.uid != payer.uid })
+        }) else {
+            alertMessage = "ไม่มีรายการที่ผู้บริโภคต่างจากผู้จ่าย"
+            showAlert = true
+            return
         }
 
         let db = Firestore.firestore()
-        let uid = Auth.auth().currentUser?.uid ?? ""
-        let ref = db.collection("Users").document(uid).collection("FriendBalances")
+        let currentUserId = Auth.auth().currentUser?.uid ?? ""
 
         for item in validItems {
-            let total = Double(item.amount) ?? 0
-            let docId = "\(uid)_to_\(friend.uid)"
+            guard let total = Double(item.amount), !item.consumers.isEmpty else { continue }
+            let perPerson = total / Double(item.consumers.count)
 
-            ref.document(docId).getDocument { snap, _ in
-                let current = snap?.data()?["amount"] as? Double ?? 0
-                ref.document(docId).setData([
-                    "from": uid,
-                    "to": friend.uid,
-                    "amount": current + total,
-                    "isPaid": false
-                ])
+            for consumer in item.consumers where consumer.uid != payer.uid {
+                // ✅ เขียนเฉพาะถ้าฉันคือ consumer
+                guard consumer.uid == currentUserId else { continue }
+
+                let logData: [String: Any] = [
+                    "itemDescription": item.description,
+                    "amount": total,
+                    "amountPerPerson": perPerson,
+                    "date": Timestamp(date: item.date),
+                    "payer": ["uid": payer.uid, "name": payer.name],
+                    "consumer": ["uid": consumer.uid, "name": consumer.name]
+                ]
+
+                db.collection("Users").document(currentUserId)
+                    .collection("FriendTransactionItems")
+                    .addDocument(data: logData) { err in
+                        if let err = err {
+                            print("❌ Log error: \(err.localizedDescription)")
+                        } else {
+                            print("✅ Log saved for consumer: \(consumer.uid)")
+                        }
+                    }
+
+                let docId = "\(consumer.uid)_to_\(payer.uid)"
+                let balanceRef = db.collection("Users").document(currentUserId)
+                    .collection("FriendBalances").document(docId)
+
+                balanceRef.getDocument { snap, _ in
+                    let currentAmount = snap?.data()? ["amount"] as? Double ?? 0
+                    let newAmount = currentAmount + perPerson
+
+                    let balanceData: [String: Any] = [
+                        "consumer": ["uid": consumer.uid, "name": consumer.name],
+                        "payer": ["uid": payer.uid, "name": payer.name],
+                        "amount": newAmount,
+                        "isPaid": false,
+                        "friendUIDs": [consumer.uid, payer.uid]
+                    ]
+
+                    balanceRef.setData(balanceData, merge: true) { err in
+                        if let err = err {
+                            print("❌ Balance error: \(err.localizedDescription)")
+                        } else {
+                            print("✅ Balance written: \(newAmount) for consumer \(consumer.uid)")
+                        }
+                    }
+                }
             }
         }
 
         navigateToHome = true
     }
 
-    // MARK: - Firebase Helpers
+
+
+
+
+    private func loadCurrentUser() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Firestore.firestore().collection("Users").document(uid).getDocument { doc, _ in
+            let name = doc?.data()?["Username"] as? String ?? "ฉัน"
+            currentUser = UserIdentity(uid: uid, name: name)
+        }
+    }
+
     private func fetchGroups() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-
         Firestore.firestore().collection("Groups")
             .whereField("members", arrayContains: uid)
             .getDocuments { snapshot, _ in
@@ -306,19 +385,16 @@ struct TranscriptSelectionView: View {
         let db = Firestore.firestore()
         db.collection("Groups").document(groupId).getDocument { snap, _ in
             guard let uids = snap?.data()?["members"] as? [String] else { return }
-
             let group = DispatchGroup()
             var results: [UserIdentity] = []
-
             for uid in uids {
                 group.enter()
                 db.collection("Users").document(uid).getDocument { doc, _ in
-                    let name = doc?.data()?["Username"] as? String ?? "Unknown"
+                    let name = doc?.data()?["Username"] as? String ?? String(uid.prefix(6))
                     results.append(UserIdentity(uid: uid, name: name))
                     group.leave()
                 }
             }
-
             group.notify(queue: .main) {
                 self.groupMembers = results
             }
@@ -327,24 +403,32 @@ struct TranscriptSelectionView: View {
 
     private func fetchFriends() {
         let uid = Auth.auth().currentUser?.uid ?? ""
-        Firestore.firestore().collection("Users").document(uid)
-            .getDocument { snap, _ in
-                let ids = snap?.data()?["friends"] as? [String] ?? []
-                let group = DispatchGroup()
-                var list: [UserIdentity] = []
-
-                for fid in ids {
-                    group.enter()
-                    Firestore.firestore().collection("Users").document(fid).getDocument { doc, _ in
-                        let name = doc?.data()?["Username"] as? String ?? "Unknown"
-                        list.append(UserIdentity(uid: fid, name: name))
-                        group.leave()
-                    }
-                }
-
-                group.notify(queue: .main) {
-                    self.friends = list
+        Firestore.firestore().collection("Users").document(uid).getDocument { snap, _ in
+            let ids = snap?.data()?["friends"] as? [String] ?? []
+            let group = DispatchGroup()
+            var list: [UserIdentity] = []
+            for fid in ids {
+                group.enter()
+                Firestore.firestore().collection("Users").document(fid).getDocument { doc, _ in
+                    let name = doc?.data()?["Username"] as? String ?? String(fid.prefix(6))
+                    list.append(UserIdentity(uid: fid, name: name))
+                    group.leave()
                 }
             }
+            group.notify(queue: .main) {
+                self.friends = list
+            }
+        }
     }
+    
+    private func fetchUsername(for uid: String, completion: @escaping (String) -> Void) {
+        Firestore.firestore().collection("Users").document(uid).getDocument { doc, error in
+            if let error = error {
+                print("❌ Error fetching username for \(uid): \(error.localizedDescription)")
+            }
+            let name = doc?.data()?["Username"] as? String ?? "Unknown"
+            completion(name)
+        }
+    }
+
 }

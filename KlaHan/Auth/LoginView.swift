@@ -52,8 +52,8 @@ struct LoginView: View {
                 Text("Login")
                     .font(.largeTitle)
                     .bold()
-                    .foregroundColor(Color(red: 0/255, green: 105/255, blue: 92/255))
-                
+                    .foregroundColor(Color(red: 1.0, green: 0.701, blue: 0.0))
+
                 VStack(spacing: 16) {
                     TextField("Email", text: $Email)
                         .autocapitalization(.none)
@@ -84,7 +84,7 @@ struct LoginView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color(red: 0/255, green: 105/255, blue: 92/255))
+                        .background(Color(red: 1.0, green: 0.701, blue: 0.0))
                         .cornerRadius(8)
                 }
                 .padding(.horizontal, 24)

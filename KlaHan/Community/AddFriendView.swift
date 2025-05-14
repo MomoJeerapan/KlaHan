@@ -12,22 +12,22 @@ import FirebaseFirestore
 
 struct AddFriendView: View {
     @Environment(\.dismiss) var dismiss
-    
+
     @State private var selectedTab: Tab = .add
     @State private var searchText: String = ""
     @State private var foundUser: DocumentSnapshot?
     @State private var contacts: [CNContact] = []
     @State private var matchedUsers: [DocumentSnapshot] = []
     @State var friendRequests: [FriendRequestModel] = []
-    
+
     let db = Firestore.firestore()
     let currentUserID: String = Auth.auth().currentUser?.uid ?? ""
-    
+
     enum Tab {
         case add
         case requests
     }
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -37,7 +37,7 @@ struct AddFriendView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
-                
+
                 if selectedTab == .add {
                     List {
                         Section(header: Text("Search by Username")) {
@@ -77,7 +77,7 @@ struct AddFriendView: View {
                                 }
                             }
                         }
-                        
+
                         Section(header: Text("From Contacts")) {
                             ForEach(matchedUsers, id: \.documentID) { user in
                                 HStack {
@@ -99,7 +99,7 @@ struct AddFriendView: View {
                         }
                     }
                     .onAppear(perform: getContactList)
-                    
+
                 } else {
                     List {
                         ScrollView {
@@ -144,9 +144,9 @@ struct AddFriendView: View {
             }
         }
     }
-    
+
     // MARK: - Contacts
-    
+
     func getContactList() {
         let store = CNContactStore()
         switch CNContactStore.authorizationStatus(for: .contacts) {
@@ -168,14 +168,14 @@ struct AddFriendView: View {
             break
         }
     }
-    
+
     func fetchContacts(from store: CNContactStore) {
         let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey] as [CNKeyDescriptor]
         let request = CNContactFetchRequest(keysToFetch: keys)
-        
+
         var contactPhones: [String] = []
         var fetchedContacts: [CNContact] = [] // สร้างตัวแปรเก็บ contacts ชั่วคราว
-        
+
         try? store.enumerateContacts(with: request) { contact, _ in
             fetchedContacts.append(contact)
             for number in contact.phoneNumbers {
@@ -183,18 +183,18 @@ struct AddFriendView: View {
                 contactPhones.append(normalizePhoneNumber(raw))
             }
         }
-        
+
         // หลังจากดึงข้อมูลเสร็จแล้ว ให้กลับมาอัปเดต UI บน Main Thread
         DispatchQueue.main.async {
             contacts = fetchedContacts // อัปเดต state contacts บน Main Thread
             checkUsersInFirebase(phoneNumbers: contactPhones)
         }
     }
-    
+
     func normalizePhoneNumber(_ number: String) -> String {
         number.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
     }
-    
+
     func checkUsersInFirebase(phoneNumbers: [String]) {
         matchedUsers.removeAll()
         for phone in phoneNumbers {
@@ -208,9 +208,9 @@ struct AddFriendView: View {
             }
         }
     }
-    
+
     // MARK: - Search and Requests
-    
+
     func searchUserByUsername(_ username: String) {
         db.collection("Users")
             .whereField("Username", isEqualTo: username) // ค้นหาด้วยตัวพิมพ์เล็กทั้งหมด
@@ -228,7 +228,7 @@ struct AddFriendView: View {
                 }
             }
     }
-    
+
     func sendFriendRequest(to friendID: String, toUsername: String) {
         let ref = db.collection("FriendRequests").document()
         db.collection("Users").document(currentUserID).getDocument { snapshot, _ in
@@ -249,7 +249,7 @@ struct AddFriendView: View {
             }
         }
     }
-    
+
     func fetchFriendRequests() {
         let db = Firestore.firestore()
 
@@ -301,31 +301,31 @@ struct AddFriendView: View {
                 }
             }
     }
-    
-    
+
+
     func respondToFriendRequest(_ request: FriendRequestModel, accept: Bool) {
         let db = Firestore.firestore()
         let requestRef = db.collection("FriendRequests").document(request.id)
-        
+
         if accept {
             let currentUserRef = db.collection("Users").document(request.to)
             let fromUserRef = db.collection("Users").document(request.from)
-            
+
             let batch = db.batch()
             // 1. Update FriendRequest status
             batch.updateData([
                 "status": "accepted"
             ], forDocument: requestRef)
-            
+
             // 2. Add each other to friends list
             batch.updateData([
                 "friends": FieldValue.arrayUnion([request.from])
             ], forDocument: currentUserRef)
-            
+
             batch.updateData([
                 "friends": FieldValue.arrayUnion([request.to])
             ], forDocument: fromUserRef)
-            
+
             // 3. Commit
             batch.commit { error in
                 if let error = error {

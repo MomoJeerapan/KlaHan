@@ -1,10 +1,3 @@
-//
-//  TopUpView.swift
-//  KlaHan
-//
-//  Created by Jeerapan Chirachanchai on 28/4/2568 BE.
-//
-
 import SwiftUI
 
 struct TopUpOption: Identifiable {
@@ -16,6 +9,8 @@ struct TopUpOption: Identifiable {
 struct TopUpView: View {
     @State private var coinBalance: Int = 0
     @State private var topUpHistory: [(date: String, amount: Int, coins: Int)] = []
+    @State private var showSuccessAlert: Bool = false
+    @State private var selectedOption: TopUpOption? = nil
 
     let topUpOptions: [TopUpOption] = [
         TopUpOption(amount: 50, coins: 5),
@@ -41,6 +36,8 @@ struct TopUpView: View {
                             coinBalance += option.coins
                             let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
                             topUpHistory.insert((date, option.amount, option.coins), at: 0)
+                            selectedOption = option
+                            showSuccessAlert = true
                         }) {
                             HStack(spacing: 16) {
                                 Image(systemName: "creditcard.fill")
@@ -90,7 +87,7 @@ struct TopUpView: View {
             .navigationBarItems(trailing:
                 NavigationLink(destination: CoinStatusView(
                     coinBalance: coinBalance,
-                    usedCoins: 0, // ยังไม่มีการใช้
+                    usedCoins: 0,
                     topUpHistory: topUpHistory
                 )) {
                     HStack(spacing: 4) {
@@ -99,6 +96,13 @@ struct TopUpView: View {
                     }
                 }
             )
+            .alert(isPresented: $showSuccessAlert) {
+                Alert(
+                    title: Text("ชำระเงินเรียบร้อย"),
+                    message: Text("คุณได้เติม \(selectedOption?.amount ?? 0) บาท รับ \(selectedOption?.coins ?? 0) coins แล้ว"),
+                    dismissButton: .default(Text("ตกลง"))
+                )
+            }
         }
     }
 }
@@ -106,4 +110,3 @@ struct TopUpView: View {
 #Preview {
     TopUpView()
 }
-
